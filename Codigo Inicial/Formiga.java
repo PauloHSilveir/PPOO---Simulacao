@@ -10,8 +10,8 @@ public class Formiga extends ElementoTerreno {
     private Formigueiro formigueiroDestino;
     
 
-    public Formiga(Localizacao localizacaoAtual) {
-        super(localizacaoAtual, "imagemFormiga.png");
+    public Formiga(Localizacao localizacaoAtual, String imagemPath) {
+        super(localizacaoAtual, imagemPath);
         localizacaoDestino = null;
         
     }

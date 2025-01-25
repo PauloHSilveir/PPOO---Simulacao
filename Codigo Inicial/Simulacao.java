@@ -13,7 +13,7 @@ public class Simulacao {
         mapa = new Mapa();
         int largura = mapa.getLargura();
         int altura = mapa.getAltura();
-        formiga = new Formiga(new Localizacao(rand.nextInt(largura),rand.nextInt(altura)));//Cria um veiculo em uma posicao aleatoria
+        formiga = new Formiga(new Localizacao(rand.nextInt(largura),rand.nextInt(altura)),"Imagens/formiga.png");//Cria um veiculo em uma posicao aleatoria
         formiga.setLocalizacaoDestino(new Localizacao(rand.nextInt(largura),rand.nextInt(altura)));//Define a posicao destino aleatoriamente
         mapa.adicionarItem(formiga);//Inicializando o mapa com o veículo
         janelaSimulacao = new JanelaSimulacao(mapa);

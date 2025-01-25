@@ -7,7 +7,7 @@ public abstract class ElementoTerreno {
 
     public ElementoTerreno(Localizacao localizacao, String imagem) {
         this.localizacaoAtual = localizacao;
-        this.imagem = new ImageIcon(getClass().getResource(imagem)).getImage();{
+        this.imagem = new ImageIcon(imagem).getImage();{
         };
     }
 
