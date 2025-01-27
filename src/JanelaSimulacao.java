@@ -29,7 +29,7 @@ public class JanelaSimulacao extends JFrame {
                     // Só desenha se a formiga estiver visível e não estiver removida
                     if (formiga.isVisivel() && !"REMOVIDA".equals(formiga.getEstado())) {
                         Localizacao localizacao = formiga.getLocalizacao();
-                        visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), formiga.getImagem());
+                        visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), formiga.getImagem(), false);
                     }
                 }
             }
@@ -38,13 +38,13 @@ public class JanelaSimulacao extends JFrame {
         // Desenhar os formigueiros no mapa
         for (Formigueiro formigueiro : mapa.getFormigueiros()) {
             Localizacao localizacao = formigueiro.getLocalizacao();
-            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY() - 1, formigueiro.getImagem());
+            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY() - 1, formigueiro.getImagem(), true);
         }
 
         // Desenhar os obstáculos
         for (Obstaculo obstaculo : mapa.getObstaculos()) {
             Localizacao localizacao = obstaculo.getLocalizacao();
-            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), obstaculo.getImagem());
+            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), obstaculo.getImagem(), true);
         }
     
         visaoMapa.repaint();
@@ -59,6 +59,7 @@ public class JanelaSimulacao extends JFrame {
     private class VisaoMapa extends JPanel {
 
         private final int VIEW_SCALING_FACTOR = 6;
+        private final int ELEMENT_EXCEPT_ANT_SCALING_FACTOR = 3;
 
         private int larguraMapa, alturaMapa;
         private int xScale, yScale;
@@ -136,9 +137,18 @@ public class JanelaSimulacao extends JFrame {
         /**
          * Desenha a imagem para um determinado item.
          */
-        public void desenharImagem(int x, int y, Image image) {
+        public void desenharImagem(int x, int y, Image image, boolean usarEscalaAlternativa) {
+            int escala;
+            if(usarEscalaAlternativa)
+                escala = ELEMENT_EXCEPT_ANT_SCALING_FACTOR;
+            else
+                escala = 1;
+
+            int larguraImagem = (xScale - 1) * escala;
+            int alturaImagem = (yScale - 1) * escala;
+
             g.drawImage(image, x * xScale + 1, y * yScale + 1,
-                        xScale - 1, yScale - 1, this);
+                        larguraImagem, alturaImagem, this);
         }
 
         /**
