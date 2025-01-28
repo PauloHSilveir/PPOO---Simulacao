@@ -96,7 +96,7 @@ public class Mapa {
     private void inicializarFormigueiros() {
         int[][] posicoesFormigueiros = {
             {2, 1},  // Formigueiro 1
-            {12, 0}, // Formigueiro 2
+            {12, 1}, // Formigueiro 2
             {32, 1}  // Formigueiro 3
         };
 

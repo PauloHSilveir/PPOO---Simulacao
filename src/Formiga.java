@@ -12,14 +12,14 @@ public class Formiga extends ElementoTerreno {
     private boolean visivel;
 
     public Formiga(Localizacao localizacao) {
-        super(localizacao, "Imagens/formiga.png");
+        super(localizacao, "Imagens/formigaFolha.png");
         this.id = nextId++;
         localizacaoAtual = localizacao;
         localizacaoDestino = null;
         formigueiroDestino = null;
-        this.velocidade = 50000;
+        this.velocidade = 50;
         Random randNum = new Random();
-        this.tempoNoFormigueiro = 1000 + randNum.nextInt(4000);
+        this.tempoNoFormigueiro = 1000 + randNum.nextInt(1000);
         this.formigaAFrente = null;
         this.estado = "MOVENDO"; // Por padrão, todas as formigas estão movendo
         this.visivel = true;

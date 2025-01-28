@@ -125,7 +125,7 @@ public class JanelaSimulacao extends JFrame {
                 g.fillRect(0, 0, tamanho.width, tamanho.height);
             }
             
-            g.setColor(new Color(105,105,105,64));
+            g.setColor(new Color(20,20,20,64));
             for (int i = 0, x = 0; x < tamanho.width; i++, x = i * xScale) {
                 g.drawLine(x, 0, x, tamanho.height - 1);
             }

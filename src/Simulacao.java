@@ -39,12 +39,7 @@ public class Simulacao {
         int largura = mapa.getLargura();
         int altura = mapa.getAltura();
 
-<<<<<<< HEAD
-        int quantidadeFormigas = 30;
-=======
-        // Adiciona múltiplas formigas à simulação
-        int quantidadeFormigas = 10; // Defina a quantidade desejada de formigas
->>>>>>> origin/develop_Gabriel
+        int quantidadeFormigas = 60;
         for (int i = 0; i < quantidadeFormigas; i++) {
             Localizacao localizacaoInicial = new Localizacao(rand.nextInt(largura), rand.nextInt(altura));
             Formiga formiga = new Formiga(localizacaoInicial);
