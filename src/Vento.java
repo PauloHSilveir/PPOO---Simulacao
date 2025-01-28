@@ -10,7 +10,7 @@ public class Vento extends Obstaculo {
             System.out.println("A formiga foi empurrada pelo vento!");
             int x = formiga.getLocalizacao().getX();
             int y = formiga.getLocalizacao().getY() - 2; // Move 2 casas para trás
-            formiga.setLocalizacaoAtual(new Localizacao(x, Math.max(0, y))); // Garante que não saia do mapa
+            //formiga.setLocalizacaoAtual(new Localizacao(x, Math.max(0, y))); // Garante que não saia do mapa
         }
     }
 }
