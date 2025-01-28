@@ -7,6 +7,31 @@ public class Simulacao {
     private JanelaSimulacao janelaSimulacao;
     private Mapa mapa;
     
+
+    private double calcularDistancia(Localizacao loc1, Localizacao loc2) {
+        int dx = loc1.getX() - loc2.getX();
+        int dy = loc1.getY() - loc2.getY();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    //encontrar o formigueiro mais próximo
+    private Formigueiro encontrarFormigueiroMaisProximo(Localizacao localizacaoFormiga) {
+        List<Formigueiro> formigueiros = mapa.getFormigueiros();
+        Formigueiro formigueiroMaisProximo = null;
+        double menorDistancia = Double.MAX_VALUE;
+
+        for (Formigueiro formigueiro : formigueiros) {
+            double distancia = calcularDistancia(localizacaoFormiga, formigueiro.getLocalizacao());
+            if (distancia < menorDistancia) {
+                menorDistancia = distancia;
+                formigueiroMaisProximo = formigueiro;
+            }
+        }
+
+        return formigueiroMaisProximo;
+    }
+
+    
     public Simulacao() {
         Random rand = new Random();
         mapa = new Mapa();
@@ -14,17 +39,16 @@ public class Simulacao {
         int largura = mapa.getLargura();
         int altura = mapa.getAltura();
 
-        // Adiciona múltiplos veículos à simulação
-        int quantidadeFormigas = 3; // Defina a quantidade desejada de veículos
+        int quantidadeFormigas = 30;
         for (int i = 0; i < quantidadeFormigas; i++) {
-            Formiga formiga = new Formiga(new Localizacao(rand.nextInt(largura), rand.nextInt(altura)));
+            Localizacao localizacaoInicial = new Localizacao(rand.nextInt(largura), rand.nextInt(altura));
+            Formiga formiga = new Formiga(localizacaoInicial);
 
-            // Escolhe aleatoriamente um dos formigueiros como destino
+            // Encontra o formigueiro mais próximo para esta formiga
             if (!mapa.getFormigueiros().isEmpty()) {
-                Formigueiro formigueiroDestino = mapa.getFormigueiros().get(rand.nextInt(mapa.getFormigueiros().size()));
-                formiga.setLocalizacaoDestino(formigueiroDestino.getLocalizacao());
-                formiga.setFormigueiroDestino(formigueiroDestino);
-                mapa.adicionarFormigueiro(formigueiroDestino);
+                Formigueiro formigueiroMaisProximo = encontrarFormigueiroMaisProximo(localizacaoInicial);
+                formiga.setLocalizacaoDestino(formigueiroMaisProximo.getLocalizacao());
+                formiga.setFormigueiroDestino(formigueiroMaisProximo);
             }
 
             formigas.add(formiga);
@@ -32,7 +56,6 @@ public class Simulacao {
         }
 
         mapa.adicionarObstaculosAleatorios();
-        // Cria a janela de simulação
         janelaSimulacao = new JanelaSimulacao(mapa);
         if (mapa == null) {
             throw new IllegalStateException("Erro: O mapa não foi inicializado corretamente!");

@@ -110,22 +110,22 @@ public class Mapa {
 
 
     private void inicializarFormigueiros() {
-        // Definir as posições fixas
-        int[][] posicoesFormigueiros = {
-            {0, 1},  // Formigueiro 1
-            //{0, 4},  // Formigueiro 2
-            //{0, 7}   // Formigueiro 3
-        };
-
-        // Criar e adicionar formigueiros automaticamente
-        for (int[] posicao : posicoesFormigueiros) {
-            Localizacao localizacao = new Localizacao(posicao[0], posicao[1]);
-            Formigueiro formigueiro = new Formigueiro(localizacao, "/Imagens/formigueiro.png", this);
-            formigueiros.add(formigueiro);
-            itensFormigueiros[localizacao.getY()][localizacao.getX()] = formigueiro; // Adicionar à matriz
-        }
+        Localizacao localizacao1 = new Localizacao(10, 1);
+        Localizacao localizacao2 = new Localizacao(15, 1);
+        Localizacao localizacao3 = new Localizacao(20, 1);
+        
+        Formigueiro formigueiro1 = new Formigueiro(localizacao1, "/Imagens/formigueiro.png", this);
+        Formigueiro formigueiro2 = new Formigueiro(localizacao2, "/Imagens/formigueiro.png", this);
+        Formigueiro formigueiro3 = new Formigueiro(localizacao3, "/Imagens/formigueiro.png", this);
+        
+        formigueiros.add(formigueiro1);
+        formigueiros.add(formigueiro2);
+        formigueiros.add(formigueiro3);
+        
+        itensFormigueiros[localizacao1.getY()][localizacao1.getX()] = formigueiro1;
+        itensFormigueiros[localizacao2.getY()][localizacao2.getX()] = formigueiro2;
+        itensFormigueiros[localizacao3.getY()][localizacao3.getX()] = formigueiro3;
     }
-
     // Método para exibir o mapa
     /*
     public void mostrarMapa() {

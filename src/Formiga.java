@@ -1,3 +1,4 @@
+import java.util.Random;
 public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoAtual;
     private Localizacao localizacaoDestino;
@@ -16,8 +17,9 @@ public class Formiga extends ElementoTerreno {
         localizacaoAtual = localizacao;
         localizacaoDestino = null;
         formigueiroDestino = null;
-        this.velocidade = 200;
-        this.tempoNoFormigueiro = 2000;
+        this.velocidade = 50000;
+        Random randNum = new Random();
+        this.tempoNoFormigueiro = 1000 + randNum.nextInt(4000);
         this.formigaAFrente = null;
         this.estado = "MOVENDO"; // Por padrão, todas as formigas estão movendo
         this.visivel = true;

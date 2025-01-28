@@ -147,7 +147,7 @@ public class Formigueiro extends ElementoTerreno {
         // Calculate position based on formigueiro's location
         // Queue forms vertically downward from the formigueiro
         int xFila = getLocalizacao().getX();
-        int yFila = getLocalizacao().getY() + ((posicaoNaFila + 1) * ESPACAMENTO_FILA);
+        int yFila = getLocalizacao().getY() + ((posicaoNaFila) * ESPACAMENTO_FILA);
         
         return new Localizacao(xFila, yFila);
     }
