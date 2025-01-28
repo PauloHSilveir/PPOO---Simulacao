@@ -12,7 +12,7 @@ public class JanelaSimulacao extends JFrame {
         visaoMapa = new VisaoMapa(mapa.getLargura(), mapa.getAltura());
         getContentPane().add(visaoMapa);
         setTitle("Ant Colony Simulator");
-        setSize(1257, 978);
+        setSize(1240, 975);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -125,7 +125,7 @@ public class JanelaSimulacao extends JFrame {
                 g.fillRect(0, 0, tamanho.width, tamanho.height);
             }
             
-            g.setColor(new Color(128, 128, 128, 64));
+            g.setColor(new Color(105,105,105,64));
             for (int i = 0, x = 0; x < tamanho.width; i++, x = i * xScale) {
                 g.drawLine(x, 0, x, tamanho.height - 1);
             }
