@@ -7,10 +7,10 @@ public class Vento extends Obstaculo {
 
     @Override
     public void afetarFormiga(Formiga formiga) {
-         // Empurra a formiga para uma direção aleatória
+        // Empurra a formiga para uma direção aleatória
         Random rand = new Random();
-        int deslocamentoX = rand.nextInt(3) - 1;
-        int deslocamentoY = rand.nextInt(3) - 1;
+        int deslocamentoX = rand.nextInt(3) - 5;
+        int deslocamentoY = rand.nextInt(3) - 5;
 
         Localizacao atual = formiga.getLocalizacao();
         Localizacao nova = new Localizacao(
@@ -19,5 +19,10 @@ public class Vento extends Obstaculo {
         );
 
         formiga.setLocalizacaoAtual(nova);
+    }
+
+    @Override
+    public int[] getTamanho() {
+        return new int[]{1, 1};
     }
 }

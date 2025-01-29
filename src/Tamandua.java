@@ -10,4 +10,9 @@ public class Tamandua extends Obstaculo {
         formiga.setEstado("REMOVIDA");
         Simulacao.getEstatisticas().registrarAfetadaPorTamandua();
     }
+
+    @Override
+    public int[] getTamanho() {
+        return new int[]{2, 2};
+    }
 }

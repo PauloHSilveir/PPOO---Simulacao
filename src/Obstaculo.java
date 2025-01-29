@@ -15,4 +15,6 @@ public abstract class Obstaculo extends ElementoTerreno {
 
     // Método abstrato para definir o comportamento do obstáculo
     public abstract void afetarFormiga(Formiga formiga);
+
+    public abstract int[] getTamanho();
 }

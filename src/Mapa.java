@@ -128,27 +128,28 @@ public class Mapa {
     public void adicionarObstaculosAleatorios() {
         Random rand = new Random();
         int quantidadeObstaculos = 20;
-
+    
         for (int i = 0; i < quantidadeObstaculos; i++) {
             boolean colocado = false;
             while (!colocado) {
                 int x = rand.nextInt(largura - 2);
                 int y = rand.nextInt(altura - 2);
                 Localizacao localizacao = new Localizacao(x, y);
-
-                if (isAreaLivre(localizacao, 3, 3)) {
-                    Obstaculo obstaculo;
-                    int tipo = rand.nextInt(3);
-                    if (tipo == 0) {
-                        obstaculo = new Tamandua(localizacao);
-                    } else if (tipo == 1) {
-                        obstaculo = new Vento(localizacao);
-                    } else {
-                        obstaculo = new Lama(localizacao);
-                    }
-
-                    for (int deslocamentoX = 0; deslocamentoX < 3; deslocamentoX++) {
-                        for (int deslocamentoY = 0; deslocamentoY < 3; deslocamentoY++) {
+    
+                Obstaculo obstaculo;
+                int tipo = rand.nextInt(3);
+                if (tipo == 0) {
+                    obstaculo = new Tamandua(localizacao);
+                } else if (tipo == 1) {
+                    obstaculo = new Vento(localizacao);
+                } else {
+                    obstaculo = new Lama(localizacao);
+                }
+    
+                int[] tamanho = obstaculo.getTamanho();
+                if (isAreaLivre(localizacao, tamanho[0], tamanho[1])) {
+                    for (int deslocamentoX = 0; deslocamentoX < tamanho[0]; deslocamentoX++) {
+                        for (int deslocamentoY = 0; deslocamentoY < tamanho[1]; deslocamentoY++) {
                             int novoX = x + deslocamentoX;
                             int novoY = y + deslocamentoY;
                             if (novoX < largura && novoY < altura) {
