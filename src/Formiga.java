@@ -3,7 +3,7 @@ public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoAtual;
     private Localizacao localizacaoDestino;
     private Formigueiro formigueiroDestino;
-    private int velocidade = 50;
+    private int velocidade = 100;
     private int tempoNoFormigueiro;
     private Formiga formigaAFrente;
     private int id; // Identificador único para cada formiga

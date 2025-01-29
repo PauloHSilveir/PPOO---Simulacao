@@ -1,5 +1,5 @@
 import java.awt.*;
-import java.io.File;
+import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -77,10 +77,15 @@ public class JanelaSimulacao extends JFrame {
             tamanho = new Dimension(0, 0);
             
             try {
-                // Carrega a imagem de fundo
-                backgroundImage = ImageIO.read(new File("Imagens/FundoPOO.png"));
-                if (backgroundImage == null) {
-                    System.out.println("Não foi possível carregar a imagem de fundo");
+                // Carrega a imagem de fundo usando getResource
+                URL imageUrl = getClass().getClassLoader().getResource("Imagens/fundo.png");
+                if (imageUrl != null) {
+                    backgroundImage = ImageIO.read(imageUrl);
+                    if (backgroundImage == null) {
+                        System.out.println("Não foi possível carregar a imagem de fundo");
+                    }
+                } else {
+                    System.out.println("Arquivo de imagem não encontrado");
                 }
             } catch (Exception e) {
                 System.out.println("Erro ao carregar imagem de fundo: " + e.getMessage());

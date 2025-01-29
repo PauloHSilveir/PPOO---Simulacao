@@ -1,6 +1,6 @@
 public class Lama extends Obstaculo {
     public Lama(Localizacao localizacao) {
-        super(localizacao, "/imagens/lama.png");
+        super(localizacao, "/Imagens/lama.png");
     }
 
     @Override

@@ -1,7 +1,7 @@
 
 public class Tamandua extends Obstaculo {
     public Tamandua(Localizacao localizacao) {
-        super(localizacao, "/imagens/tamandua.png");
+        super(localizacao, "/Imagens/tamandua.png");
     }
 
     @Override

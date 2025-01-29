@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Vento extends Obstaculo {
     public Vento(Localizacao localizacao) {
-        super(localizacao, "/imagens/vento.png");
+        super(localizacao, "/Imagens/vento.png");
     }
 
     @Override
