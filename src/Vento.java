@@ -19,6 +19,7 @@ public class Vento extends Obstaculo {
         );
 
         formiga.setLocalizacaoAtual(nova);
+        Simulacao.getEstatisticas().registrarAfetadaPorVento(formiga.getId());
     }
 
     @Override

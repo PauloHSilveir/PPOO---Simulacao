@@ -9,7 +9,7 @@ public class Lama extends Obstaculo {
         int novaVelocidade = velocidadeAtual + 10; // Reduz a velocidade em 5, mas não abaixo de 0
         formiga.setVelocidade(novaVelocidade);
         formiga.setEstado("AFETADA");
-        //Simulacao.getEstatisticas().registrarAfetadaPorLama();
+        Simulacao.getEstatisticas().registrarAfetadaPorLama(formiga.getId());
     }
 
     @Override
