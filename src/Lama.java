@@ -1,3 +1,4 @@
+
 public class Lama extends Obstaculo {
 
     public Lama(Localizacao localizacao) {
@@ -6,10 +7,7 @@ public class Lama extends Obstaculo {
 
     @Override
     public void afetarFormiga(Formiga formiga) {
-        if (formiga.getLocalizacao().equals(getLocalizacao())) {
-            System.out.println("A formiga entrou na lama e está mais lenta!");
-            // Reduz a velocidade da formiga atrasando o próximo movimento
-            //formiga.setVelocidade(formiga.getVelocidade() + 500);
-        }
+        // Reduz a velocidade da formiga
+        formiga.setVelocidade(200); // Aumenta o delay do movimento
     }
 }

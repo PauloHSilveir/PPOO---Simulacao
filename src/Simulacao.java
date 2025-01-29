@@ -27,7 +27,6 @@ public class Simulacao {
                 formigueiroMaisProximo = formigueiro;
             }
         }
-
         return formigueiroMaisProximo;
     }
 
@@ -39,7 +38,7 @@ public class Simulacao {
         int largura = mapa.getLargura();
         int altura = mapa.getAltura();
 
-        int quantidadeFormigas = 60;
+        int quantidadeFormigas = 30;
         for (int i = 0; i < quantidadeFormigas; i++) {
             Localizacao localizacaoInicial = new Localizacao(rand.nextInt(largura), rand.nextInt(altura));
             Formiga formiga = new Formiga(localizacaoInicial);
@@ -117,14 +116,38 @@ public class Simulacao {
     
     private void executarUmPasso() {
         for (Formiga formiga : formigas) {
-            
             mapa.removerItem(formiga);
+
+            // Verifica colisão com obstáculos antes de executar a ação
+            verificarColisaoComObstaculos(formiga);
+
             formiga.executarAcao();
             mapa.adicionarItem(formiga);
             
         }
         // Atualiza a interface gráfica após todas as ações
         janelaSimulacao.executarAcao();
+    }
+
+    private void verificarColisaoComObstaculos(Formiga formiga) {
+        Localizacao locFormiga = formiga.getLocalizacao();
+        
+        // Para cada obstáculo no mapa
+        for (Obstaculo obstaculo : mapa.getObstaculos()) {
+            Localizacao locObstaculo = obstaculo.getLocalizacao();
+            
+            // Verifica se a formiga está dentro da área 3x3 do obstáculo
+            boolean dentroAreaX = locFormiga.getX() >= locObstaculo.getX() && 
+                                locFormiga.getX() < locObstaculo.getX() + 3;
+            boolean dentroAreaY = locFormiga.getY() >= locObstaculo.getY() && 
+                                locFormiga.getY() < locObstaculo.getY() + 3;
+            
+            if (dentroAreaX && dentroAreaY) {
+                // A formiga está dentro da área do obstáculo
+                obstaculo.afetarFormiga(formiga);
+                break; // Sai do loop após encontrar um obstáculo que afeta a formiga
+            }
+        }
     }
     
     private void esperar(int milisegundos) {

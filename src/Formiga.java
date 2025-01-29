@@ -3,7 +3,7 @@ public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoAtual;
     private Localizacao localizacaoDestino;
     private Formigueiro formigueiroDestino;
-    private int velocidade;
+    private int velocidade = 50;
     private int tempoNoFormigueiro;
     private Formiga formigaAFrente;
     private int id; // Identificador único para cada formiga
@@ -17,7 +17,6 @@ public class Formiga extends ElementoTerreno {
         localizacaoAtual = localizacao;
         localizacaoDestino = null;
         formigueiroDestino = null;
-        this.velocidade = 50;
         Random randNum = new Random();
         this.tempoNoFormigueiro = 1000 + randNum.nextInt(1000);
         this.formigaAFrente = null;
@@ -89,6 +88,15 @@ public class Formiga extends ElementoTerreno {
     public Formiga getFormigaAFrente() {
         return formigaAFrente;
     }
+
+    public void setVelocidade(int novaVelocidade) {
+        this.velocidade = novaVelocidade;
+    }
+    
+    public int getVelocidade() {
+        return this.velocidade;
+    }
+    
 
     /*
      * public void executarAcao() {

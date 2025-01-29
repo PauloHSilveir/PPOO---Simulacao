@@ -127,7 +127,7 @@ public class Mapa {
      */
     public void adicionarObstaculosAleatorios() {
         Random rand = new Random();
-        int quantidadeObstaculos = 10;
+        int quantidadeObstaculos = 20;
 
         for (int i = 0; i < quantidadeObstaculos; i++) {
             boolean colocado = false;
