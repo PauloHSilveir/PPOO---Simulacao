@@ -13,17 +13,50 @@ public class Formigueiro extends ElementoTerreno {
     private int id;
     private static int nextId = 1;
     private static final int ESPACAMENTO_FILA = 1; // Spacing between ants in queue
+    private int indiceFormigueiro;
 
     public Formigueiro(Localizacao localizacao, String imagem, Mapa mapa) {
         super(localizacao, imagem);
         this.id = nextId++;
+        this.indiceFormigueiro = id - 1; // índice 0-based para estatísticas
         this.localizacao = localizacao;
         this.ocupado = false;
         this.filaDeEspera = new LinkedList<>();
         this.mapa = mapa;
         this.lock = new ReentrantLock();
         this.ultimaFormigaNaFila = null;
-        System.out.println("[Formigueiro-" + id + "] Criado na posição " + localizacao);
+    }
+
+    public int getTamanhoFila() {
+        return filaDeEspera.size() + (ocupado ? 1 : 0);
+    }
+    
+    private void sair(Formiga formiga) {
+        System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
+        
+        formiga.setEstado("REMOVIDA");
+        formiga.setVisivel(false);
+        mapa.removerItem(formiga);
+        formiga.setFormigaAFrente(null);
+        
+        // Registra a entrada da formiga nas estatísticas
+        Simulacao.getEstatisticas().registrarEntradaFormigueiro(indiceFormigueiro);
+    
+        lock.lock();
+        try {
+            if (!filaDeEspera.isEmpty()) {
+                Formiga proximaFormiga = filaDeEspera.poll();
+                proximaFormiga.setFormigaAFrente(null);
+                proximaFormiga.setEstado("EM_ATENDIMENTO");
+                atenderFormiga(proximaFormiga);
+                atualizarPosicoesFila();
+            } else {
+                ocupado = false;
+                ultimaFormigaNaFila = null;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void entrar(Formiga formiga) {
@@ -159,36 +192,6 @@ public class Formigueiro extends ElementoTerreno {
             formiga.setLocalizacaoAtual(novaPosicao);
             formiga.setLocalizacaoDestino(novaPosicao);
             posicao++;
-        }
-    }
-    
-    private void sair(Formiga formiga) {
-        System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
-        
-        formiga.setEstado("REMOVIDA");
-        formiga.setVisivel(false);
-        mapa.removerItem(formiga);
-        formiga.setFormigaAFrente(null);
-    
-        lock.lock();
-        try {
-            if (!filaDeEspera.isEmpty()) {
-                Formiga proximaFormiga = filaDeEspera.poll();
-                System.out.println("[Formigueiro-" + id + "] Próxima formiga da fila: Formiga-" + proximaFormiga.getId());
-    
-                proximaFormiga.setFormigaAFrente(null);
-                proximaFormiga.setEstado("EM_ATENDIMENTO");
-                atenderFormiga(proximaFormiga);
-    
-                // Update positions for remaining ants in queue
-                atualizarPosicoesFila();
-            } else {
-                System.out.println("[Formigueiro-" + id + "] Fila vazia, formigueiro disponível");
-                ocupado = false;
-                ultimaFormigaNaFila = null;
-            }
-        } finally {
-            lock.unlock();
         }
     }
 

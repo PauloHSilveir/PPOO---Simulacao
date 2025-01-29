@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -6,7 +7,78 @@ public class Simulacao {
     private List<Formiga> formigas;
     private JanelaSimulacao janelaSimulacao;
     private Mapa mapa;
+    private static EstatisticasSimulacao estatisticas;
     
+    public static EstatisticasSimulacao getEstatisticas() {
+        return estatisticas;
+    }
+
+    public Simulacao() {
+        Random rand = new Random();
+        mapa = new Mapa();
+        formigas = new ArrayList<>();
+        estatisticas = new EstatisticasSimulacao(3); // 3 formigueiros
+        
+        // Primeiro, adicionar obstáculos antes das formigas
+        mapa.adicionarObstaculosAleatorios();
+        
+        // Depois, criar e adicionar formigas
+        int quantidadeFormigas = 20;
+        for (int i = 0; i < quantidadeFormigas; i++) {
+            // Gerar posição inicial válida (evitando obstáculos)
+            Localizacao localizacaoInicial;
+            do {
+                localizacaoInicial = new Localizacao(
+                    rand.nextInt(mapa.getLargura()), 
+                    rand.nextInt(mapa.getAltura())
+                );
+            } while (!isPosicaoValida(localizacaoInicial));
+            
+            Formiga formiga = new Formiga(localizacaoInicial);
+            
+            // Define o formigueiro mais próximo como destino
+            if (!mapa.getFormigueiros().isEmpty()) {
+                Formigueiro formigueiroDestino = encontrarFormigueiroMaisProximo(formiga);
+                formiga.setLocalizacaoDestino(formigueiroDestino.getLocalizacao());
+                formiga.setFormigueiroDestino(formigueiroDestino);
+            }
+            
+            formigas.add(formiga);
+            mapa.adicionarItem(formiga);
+        }
+        
+        janelaSimulacao = new JanelaSimulacao(mapa);
+    }
+
+    private boolean isPosicaoValida(Localizacao loc) {
+        // Verifica se a posição está livre de obstáculos
+        for (Obstaculo obstaculo : mapa.getObstaculos()) {
+            Localizacao obsLoc = obstaculo.getLocalizacao();
+            if (loc.getX() >= obsLoc.getX() && loc.getX() < obsLoc.getX() + 3 &&
+                loc.getY() >= obsLoc.getY() && loc.getY() < obsLoc.getY() + 3) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Formigueiro encontrarFormigueiroMaisProximo(Formiga formiga) {
+        List<Formigueiro> formigueiros = mapa.getFormigueiros();
+        if (formigueiros.isEmpty()) return null;
+        
+        Formigueiro maisProximo = formigueiros.get(0);
+        double menorDistancia = calcularDistancia(formiga.getLocalizacao(), maisProximo.getLocalizacao());
+        
+        for (Formigueiro formigueiro : formigueiros) {
+            double distancia = calcularDistancia(formiga.getLocalizacao(), formigueiro.getLocalizacao());
+            if (distancia < menorDistancia) {
+                menorDistancia = distancia;
+                maisProximo = formigueiro;
+            }
+        }
+        
+        return maisProximo;
+    }
 
     private double calcularDistancia(Localizacao loc1, Localizacao loc2) {
         int dx = loc1.getX() - loc2.getX();
@@ -14,140 +86,56 @@ public class Simulacao {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    //encontrar o formigueiro mais próximo
-    private Formigueiro encontrarFormigueiroMaisProximo(Localizacao localizacaoFormiga) {
-        List<Formigueiro> formigueiros = mapa.getFormigueiros();
-        Formigueiro formigueiroMaisProximo = null;
-        double menorDistancia = Double.MAX_VALUE;
-
-        for (Formigueiro formigueiro : formigueiros) {
-            double distancia = calcularDistancia(localizacaoFormiga, formigueiro.getLocalizacao());
-            if (distancia < menorDistancia) {
-                menorDistancia = distancia;
-                formigueiroMaisProximo = formigueiro;
-            }
-        }
-        return formigueiroMaisProximo;
-    }
-
-    
-    public Simulacao() {
-        Random rand = new Random();
-        mapa = new Mapa();
-        formigas = new ArrayList<>();
-        int largura = mapa.getLargura();
-        int altura = mapa.getAltura();
-
-        int quantidadeFormigas = 30;
-        for (int i = 0; i < quantidadeFormigas; i++) {
-            Localizacao localizacaoInicial = new Localizacao(rand.nextInt(largura), rand.nextInt(altura));
-            Formiga formiga = new Formiga(localizacaoInicial);
-
-            // Encontra o formigueiro mais próximo para esta formiga
-            if (!mapa.getFormigueiros().isEmpty()) {
-                Formigueiro formigueiroMaisProximo = encontrarFormigueiroMaisProximo(localizacaoInicial);
-                formiga.setLocalizacaoDestino(formigueiroMaisProximo.getLocalizacao());
-                formiga.setFormigueiroDestino(formigueiroMaisProximo);
-            }
-
-            formigas.add(formiga);
-            mapa.adicionarItem(formiga);
-        }
-
-        mapa.adicionarObstaculosAleatorios();
-        janelaSimulacao = new JanelaSimulacao(mapa);
-        if (mapa == null) {
-            throw new IllegalStateException("Erro: O mapa não foi inicializado corretamente!");
-        }
-    }
-    
-    public void executarSimulacao(int numPassos) {
-        janelaSimulacao.executarAcao();
-        for (int i = 0; i < numPassos; i++) {
-            executarUmPasso();
-            esperar(200);
-
-            //esperar(executarUmPasso());
-        }
-    }
-    /*
     private void executarUmPasso() {
-        for (Veiculo veiculo : veiculos) {
-            mapa.removerItem(veiculo);  // Remove da posição antiga
-            veiculo.executarAcao();
-            mapa.adicionarItem(veiculo);  // Adiciona na nova posição
-        
-            if (veiculo.getFormigueiroDestino() != null && 
-            formigaConcluiuTarefa(veiculo)) {
-            veiculo.acessarFormigueiro(veiculo.getFormigueiroDestino());
-        }
-        }
-        janelaSimulacao.executarAcao();
-    }*/
-    /* 
-    private int executarUmPasso() {
-        for (Formiga formiga : formigas) {
-            // Obtém a próxima posição da formiga com base no destino
-            Localizacao proximaPosicao = formiga.getLocalizacao().proximaLocalizacao(formiga.getLocalizacaoDestino());
+        Iterator<Formiga> iterator = formigas.iterator();
+        while (iterator.hasNext()) {
+            Formiga formiga = iterator.next();
             
-            // Verifica se existe algum item na próxima posição
-            ElementoTerreno itemNaFrente = mapa.getItemNaPosicao(proximaPosicao);
-    
-            if (itemNaFrente == null) {
-                // Se a célula está livre, a formiga pode se mover
-                mapa.removerItem(formiga);
-                formiga.executarAcao();
-                mapa.adicionarItem(formiga);
-            } else if (itemNaFrente instanceof Obstaculo) {
-                // Se for um obstáculo, aplica o efeito na formiga
-                Obstaculo obstaculo = (Obstaculo) itemNaFrente;
-                obstaculo.afetarFormiga(formiga);
-            } else if (itemNaFrente instanceof Formiga) {
-                // Se for outra formiga, mantém a posição atual (fila indiana)
-                // A lógica de permanência já está implícita ao não executar ações
+            // Ignora formigas já removidas
+            if ("REMOVIDA".equals(formiga.getEstado()) || !formiga.isVisivel()) {
+                iterator.remove();
                 continue;
             }
-            return formiga.getVelocidade();
-        }
-        // Atualiza a interface gráfica após todas as ações
-        janelaSimulacao.executarAcao();
-        return 200;
-    }*/
-    
-    private void executarUmPasso() {
-        for (Formiga formiga : formigas) {
-            mapa.removerItem(formiga);
 
-            // Verifica colisão com obstáculos antes de executar a ação
-            verificarColisaoComObstaculos(formiga);
+            mapa.removerItem(formiga);
+            
+            // Verifica colisão com obstáculos apenas uma vez por formiga
+            if (!"AFETADA".equals(formiga.getEstado())) {
+                verificarColisaoComObstaculos(formiga);
+            }
 
             formiga.executarAcao();
             mapa.adicionarItem(formiga);
-            
         }
-        // Atualiza a interface gráfica após todas as ações
         janelaSimulacao.executarAcao();
     }
-
+    
     private void verificarColisaoComObstaculos(Formiga formiga) {
         Localizacao locFormiga = formiga.getLocalizacao();
-        
-        // Para cada obstáculo no mapa
+    
         for (Obstaculo obstaculo : mapa.getObstaculos()) {
             Localizacao locObstaculo = obstaculo.getLocalizacao();
-            
-            // Verifica se a formiga está dentro da área 3x3 do obstáculo
+    
             boolean dentroAreaX = locFormiga.getX() >= locObstaculo.getX() && 
-                                locFormiga.getX() < locObstaculo.getX() + 3;
+                                  locFormiga.getX() < locObstaculo.getX() + 3;
             boolean dentroAreaY = locFormiga.getY() >= locObstaculo.getY() && 
-                                locFormiga.getY() < locObstaculo.getY() + 3;
-            
+                                  locFormiga.getY() < locObstaculo.getY() + 3;
+    
             if (dentroAreaX && dentroAreaY) {
-                // A formiga está dentro da área do obstáculo
                 obstaculo.afetarFormiga(formiga);
-                break; // Sai do loop após encontrar um obstáculo que afeta a formiga
+                break; // Sai do loop após afetar a formiga
             }
         }
+    }
+    
+
+    public void executarSimulacao(int numPassos) {
+        for (int i = 0; i < numPassos; i++) {
+            executarUmPasso();
+            esperar(200);
+        }
+        // Exibe estatísticas ao final da simulação
+        System.out.println(estatisticas.toString());
     }
     
     private void esperar(int milisegundos) {

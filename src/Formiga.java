@@ -8,7 +8,7 @@ public class Formiga extends ElementoTerreno {
     private Formiga formigaAFrente;
     private int id; // Identificador único para cada formiga
     private static int nextId = 1; // Contador para gerar IDs únicos
-    private String estado; // "PARADA", "MOVENDO", "REMOVIDA"
+    private String estado; // "PARADA", "MOVENDO", "REMOVIDA", "AFETADA", "NA_FILA"
     private boolean visivel;
 
     public Formiga(Localizacao localizacao) {
@@ -20,7 +20,7 @@ public class Formiga extends ElementoTerreno {
         Random randNum = new Random();
         this.tempoNoFormigueiro = 1000 + randNum.nextInt(1000);
         this.formigaAFrente = null;
-        this.estado = "MOVENDO"; // Por padrão, todas as formigas estão movendo
+        this.estado = "MOVENDO";
         this.visivel = true;
         System.out.println("[Formiga-" + id + "] Criada na posição " + localizacao);
     }
@@ -97,34 +97,6 @@ public class Formiga extends ElementoTerreno {
         return this.velocidade;
     }
     
-
-    /*
-     * public void executarAcao() {
-     * if (formigaAFrente != null) {
-     * Localizacao locFormigaFrente = formigaAFrente.getLocalizacao();
-     * setLocalizacaoDestino(new Localizacao(locFormigaFrente.getX(),
-     * locFormigaFrente.getY() + 1));
-     * System.out.println("[Formiga-" + id + "] Seguindo Formiga-" +
-     * formigaAFrente.getId() +
-     * " para posição " + localizacaoDestino);
-     * }
-     * 
-     * if (localizacaoDestino != null) {
-     * Localizacao proximaLocalizacao =
-     * localizacaoAtual.proximaLocalizacao(localizacaoDestino);
-     * System.out.println("[Formiga-" + id + "] Movendo de " + localizacaoAtual +
-     * " para " + proximaLocalizacao);
-     * setLocalizacaoAtual(proximaLocalizacao);
-     * 
-     * if (localizacaoAtual.equals(localizacaoDestino) && formigaAFrente == null) {
-     * if (formigueiroDestino != null) {
-     * System.out.println("[Formiga-" + id + "] Tentando entrar no formigueiro");
-     * formigueiroDestino.entrar(this);
-     * }
-     * }
-     * }
-     * }
-     */
     public void executarAcao() {
         // If removed or invisible, do nothing
         if ("REMOVIDA".equals(estado) || !isVisivel()) {
