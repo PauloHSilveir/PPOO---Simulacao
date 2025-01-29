@@ -32,16 +32,20 @@ public class Formigueiro extends ElementoTerreno {
     }
     
     private void sair(Formiga formiga) {
+        if (formiga.getEstado().equals("REMOVIDA")) {
+            return; // Ignora se já foi removida
+        }
+
         System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
-        
+
         formiga.setEstado("REMOVIDA");
         formiga.setVisivel(false);
         mapa.removerItem(formiga);
         formiga.setFormigaAFrente(null);
-        
-        // Registra a entrada da formiga nas estatísticas
-        Simulacao.getEstatisticas().registrarEntradaFormigueiro(indiceFormigueiro);
-    
+
+        // Registra a entrada da formiga nas estatísticas com o ID da formiga
+        Simulacao.getEstatisticas().registrarEntradaFormigueiro(indiceFormigueiro, formiga.getId());
+
         lock.lock();
         try {
             if (!filaDeEspera.isEmpty()) {

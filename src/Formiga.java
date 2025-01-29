@@ -3,10 +3,12 @@ public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoAtual;
     private Localizacao localizacaoDestino;
     private Formigueiro formigueiroDestino;
+
     private int velocidade = 50;
     private int tempoNoFormigueiro;
+    
     private Formiga formigaAFrente;
-    private int id; // Identificador único para cada formiga
+    private final int id; // Identificador único para cada formiga
     private static int nextId = 1; // Contador para gerar IDs únicos
     private String estado; // "PARADA", "MOVENDO", "REMOVIDA", "AFETADA", "NA_FILA"
     private boolean visivel;
@@ -29,6 +31,7 @@ public class Formiga extends ElementoTerreno {
         return id;
     }
 
+    @Override
     public Localizacao getLocalizacao() {
         return super.getLocalizacao();
     }

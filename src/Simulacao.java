@@ -23,7 +23,7 @@ public class Simulacao {
         mapa.adicionarObstaculosAleatorios();
         
         // Depois, criar e adicionar formigas
-        int quantidadeFormigas = 20;
+        int quantidadeFormigas = 10;
         for (int i = 0; i < quantidadeFormigas; i++) {
             // Gerar posição inicial válida (evitando obstáculos)
             Localizacao localizacaoInicial;
@@ -145,4 +145,5 @@ public class Simulacao {
             System.out.println(e.getMessage());
         }
     }
+
 }

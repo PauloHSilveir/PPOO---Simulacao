@@ -1,4 +1,3 @@
-
 public class Tamandua extends Obstaculo {
     public Tamandua(Localizacao localizacao) {
         super(localizacao, "/Imagens/tamandua.png");
@@ -8,7 +7,7 @@ public class Tamandua extends Obstaculo {
     public void afetarFormiga(Formiga formiga) {
         formiga.setVisivel(false);
         formiga.setEstado("REMOVIDA");
-        Simulacao.getEstatisticas().registrarAfetadaPorTamandua();
+        Simulacao.getEstatisticas().registrarAfetadaPorTamandua(formiga.getId());
     }
 
     @Override
