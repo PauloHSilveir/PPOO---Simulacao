@@ -3,7 +3,7 @@ public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoAtual;
     private Localizacao localizacaoDestino;
     private Formigueiro formigueiroDestino;
-    private int velocidade = 100;
+    private int velocidade = 50;
     private int tempoNoFormigueiro;
     private Formiga formigaAFrente;
     private int id; // Identificador único para cada formiga
@@ -113,11 +113,18 @@ public class Formiga extends ElementoTerreno {
         if ("MOVENDO".equals(estado) && localizacaoDestino != null) {
             Localizacao proximaLocalizacao = localizacaoAtual.proximaLocalizacao(localizacaoDestino);
             setLocalizacaoAtual(proximaLocalizacao);
-
+    
             // If reached formigueiro
             if (localizacaoAtual.equals(localizacaoDestino) && formigueiroDestino != null) {
                 System.out.println("[Formiga-" + getId() + "] Chegou ao formigueiro");
                 formigueiroDestino.entrar(this);
+            } else {
+                // Espera um tempo baseado na velocidade antes de se mover novamente
+                try {
+                    Thread.sleep(velocidade);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
