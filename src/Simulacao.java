@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -6,102 +7,135 @@ public class Simulacao {
     private List<Formiga> formigas;
     private JanelaSimulacao janelaSimulacao;
     private Mapa mapa;
+    private static EstatisticasSimulacao estatisticas;
     
+    public static EstatisticasSimulacao getEstatisticas() {
+        return estatisticas;
+    }
+
     public Simulacao() {
         Random rand = new Random();
         mapa = new Mapa();
         formigas = new ArrayList<>();
-        int largura = mapa.getLargura();
-        int altura = mapa.getAltura();
-
-        // Adiciona múltiplos veículos à simulação
-        int quantidadeFormigas = 3; // Defina a quantidade desejada de veículos
+        estatisticas = new EstatisticasSimulacao(3); // 3 formigueiros
+        
+        // Primeiro, adicionar obstáculos antes das formigas
+        mapa.adicionarObstaculosAleatorios();
+        
+        // Depois, criar e adicionar formigas
+        int quantidadeFormigas = 20;
         for (int i = 0; i < quantidadeFormigas; i++) {
-            Formiga formiga = new Formiga(new Localizacao(rand.nextInt(largura), rand.nextInt(altura)));
-
-            // Escolhe aleatoriamente um dos formigueiros como destino
+            // Gerar posição inicial válida (evitando obstáculos)
+            Localizacao localizacaoInicial;
+            do {
+                localizacaoInicial = new Localizacao(
+                    rand.nextInt(mapa.getLargura()), 
+                    rand.nextInt(mapa.getAltura())
+                );
+            } while (!isPosicaoValida(localizacaoInicial));
+            
+            Formiga formiga = new Formiga(localizacaoInicial);
+            
+            // Define o formigueiro mais próximo como destino
             if (!mapa.getFormigueiros().isEmpty()) {
-                Formigueiro formigueiroDestino = mapa.getFormigueiros().get(rand.nextInt(mapa.getFormigueiros().size()));
+                Formigueiro formigueiroDestino = encontrarFormigueiroMaisProximo(formiga);
                 formiga.setLocalizacaoDestino(formigueiroDestino.getLocalizacao());
                 formiga.setFormigueiroDestino(formigueiroDestino);
-                mapa.adicionarFormigueiro(formigueiroDestino);
             }
-
+            
             formigas.add(formiga);
             mapa.adicionarItem(formiga);
         }
-
-        mapa.adicionarObstaculosAleatorios();
-        // Cria a janela de simulação
+        
         janelaSimulacao = new JanelaSimulacao(mapa);
-        if (mapa == null) {
-            throw new IllegalStateException("Erro: O mapa não foi inicializado corretamente!");
+    }
+
+    private boolean isPosicaoValida(Localizacao loc) {
+        // Verifica se a posição está livre de obstáculos
+        for (Obstaculo obstaculo : mapa.getObstaculos()) {
+            Localizacao obsLoc = obstaculo.getLocalizacao();
+            if (loc.getX() >= obsLoc.getX() && loc.getX() < obsLoc.getX() + 3 &&
+                loc.getY() >= obsLoc.getY() && loc.getY() < obsLoc.getY() + 3) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Formigueiro encontrarFormigueiroMaisProximo(Formiga formiga) {
+        List<Formigueiro> formigueiros = mapa.getFormigueiros();
+        if (formigueiros.isEmpty()) return null;
+        
+        Formigueiro maisProximo = formigueiros.get(0);
+        double menorDistancia = calcularDistancia(formiga.getLocalizacao(), maisProximo.getLocalizacao());
+        
+        for (Formigueiro formigueiro : formigueiros) {
+            double distancia = calcularDistancia(formiga.getLocalizacao(), formigueiro.getLocalizacao());
+            if (distancia < menorDistancia) {
+                menorDistancia = distancia;
+                maisProximo = formigueiro;
+            }
+        }
+        
+        return maisProximo;
+    }
+
+    private double calcularDistancia(Localizacao loc1, Localizacao loc2) {
+        int dx = loc1.getX() - loc2.getX();
+        int dy = loc1.getY() - loc2.getY();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private void executarUmPasso() {
+        Iterator<Formiga> iterator = formigas.iterator();
+        while (iterator.hasNext()) {
+            Formiga formiga = iterator.next();
+            
+            // Ignora formigas já removidas
+            if ("REMOVIDA".equals(formiga.getEstado()) || !formiga.isVisivel()) {
+                iterator.remove();
+                continue;
+            }
+
+            mapa.removerItem(formiga);
+            
+            // Verifica colisão com obstáculos apenas uma vez por formiga
+            if (!"AFETADA".equals(formiga.getEstado())) {
+                verificarColisaoComObstaculos(formiga);
+            }
+
+            formiga.executarAcao();
+            mapa.adicionarItem(formiga);
+        }
+        janelaSimulacao.executarAcao();
+    }
+    
+    private void verificarColisaoComObstaculos(Formiga formiga) {
+        Localizacao locFormiga = formiga.getLocalizacao();
+    
+        for (Obstaculo obstaculo : mapa.getObstaculos()) {
+            Localizacao locObstaculo = obstaculo.getLocalizacao();
+    
+            boolean dentroAreaX = locFormiga.getX() >= locObstaculo.getX() && 
+                                  locFormiga.getX() < locObstaculo.getX() + 3;
+            boolean dentroAreaY = locFormiga.getY() >= locObstaculo.getY() && 
+                                  locFormiga.getY() < locObstaculo.getY() + 3;
+    
+            if (dentroAreaX && dentroAreaY) {
+                obstaculo.afetarFormiga(formiga);
+                break; // Sai do loop após afetar a formiga
+            }
         }
     }
     
+
     public void executarSimulacao(int numPassos) {
-        janelaSimulacao.executarAcao();
         for (int i = 0; i < numPassos; i++) {
             executarUmPasso();
             esperar(200);
-
-            //esperar(executarUmPasso());
         }
-    }
-    /*
-    private void executarUmPasso() {
-        for (Veiculo veiculo : veiculos) {
-            mapa.removerItem(veiculo);  // Remove da posição antiga
-            veiculo.executarAcao();
-            mapa.adicionarItem(veiculo);  // Adiciona na nova posição
-        
-            if (veiculo.getFormigueiroDestino() != null && 
-            formigaConcluiuTarefa(veiculo)) {
-            veiculo.acessarFormigueiro(veiculo.getFormigueiroDestino());
-        }
-        }
-        janelaSimulacao.executarAcao();
-    }*/
-    /* 
-    private int executarUmPasso() {
-        for (Formiga formiga : formigas) {
-            // Obtém a próxima posição da formiga com base no destino
-            Localizacao proximaPosicao = formiga.getLocalizacao().proximaLocalizacao(formiga.getLocalizacaoDestino());
-            
-            // Verifica se existe algum item na próxima posição
-            ElementoTerreno itemNaFrente = mapa.getItemNaPosicao(proximaPosicao);
-    
-            if (itemNaFrente == null) {
-                // Se a célula está livre, a formiga pode se mover
-                mapa.removerItem(formiga);
-                formiga.executarAcao();
-                mapa.adicionarItem(formiga);
-            } else if (itemNaFrente instanceof Obstaculo) {
-                // Se for um obstáculo, aplica o efeito na formiga
-                Obstaculo obstaculo = (Obstaculo) itemNaFrente;
-                obstaculo.afetarFormiga(formiga);
-            } else if (itemNaFrente instanceof Formiga) {
-                // Se for outra formiga, mantém a posição atual (fila indiana)
-                // A lógica de permanência já está implícita ao não executar ações
-                continue;
-            }
-            return formiga.getVelocidade();
-        }
-        // Atualiza a interface gráfica após todas as ações
-        janelaSimulacao.executarAcao();
-        return 200;
-    }*/
-    
-    private void executarUmPasso() {
-        for (Formiga formiga : formigas) {
-            
-            mapa.removerItem(formiga);
-            formiga.executarAcao();
-            mapa.adicionarItem(formiga);
-            
-        }
-        // Atualiza a interface gráfica após todas as ações
-        janelaSimulacao.executarAcao();
+        // Exibe estatísticas ao final da simulação
+        System.out.println(estatisticas.toString());
     }
     
     private void esperar(int milisegundos) {

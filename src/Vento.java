@@ -1,16 +1,28 @@
-public class Vento extends Obstaculo {
+import java.util.Random;
 
+public class Vento extends Obstaculo {
     public Vento(Localizacao localizacao) {
-        super(localizacao, "/imagens/vento.png");
+        super(localizacao, "/Imagens/vento.png");
     }
 
     @Override
     public void afetarFormiga(Formiga formiga) {
-        if (formiga.getLocalizacao().equals(super.getLocalizacao())) {
-            System.out.println("A formiga foi empurrada pelo vento!");
-            int x = formiga.getLocalizacao().getX();
-            int y = formiga.getLocalizacao().getY() - 2; // Move 2 casas para trás
-            formiga.setLocalizacaoAtual(new Localizacao(x, Math.max(0, y))); // Garante que não saia do mapa
-        }
+        // Empurra a formiga para uma direção aleatória
+        Random rand = new Random();
+        int deslocamentoX = rand.nextInt(3) - 5;
+        int deslocamentoY = rand.nextInt(3) - 5;
+
+        Localizacao atual = formiga.getLocalizacao();
+        Localizacao nova = new Localizacao(
+                Math.max(0, Math.min(34, atual.getX() + deslocamentoX)),
+                Math.max(0, Math.min(34, atual.getY() + deslocamentoY))
+        );
+
+        formiga.setLocalizacaoAtual(nova);
+    }
+
+    @Override
+    public int[] getTamanho() {
+        return new int[]{1, 1};
     }
 }

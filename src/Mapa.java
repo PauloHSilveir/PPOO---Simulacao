@@ -68,26 +68,99 @@ public class Mapa {
         return itens[x][y];
     }
     
+    /*
+     * Verifica se uma área retangular no mapa está livre para ser ocupada por um item. Usa a 
+     * localização e as dimensões da área para checar se qualquer item já ocupa algum ponto 
+     * dessa área.
+     */
+    public boolean isAreaLivre(Localizacao localizacao, int larguraArea, int alturaArea) {
+        int inicioX = Math.max(0, localizacao.getX());
+        int inicioY = Math.max(0, localizacao.getY());
+        int fimX = Math.min(largura, inicioX + larguraArea);
+        int fimY = Math.min(altura, inicioY + alturaArea);
+
+        for (int x = inicioX; x < fimX; x++) {
+            for (int y = inicioY; y < fimY; y++) {
+                if (itensFormigueiros[y][x] != null || itensObstaculos[y][x] != null || itens[y][x] != null) {
+                    return false; // Posição já ocupada
+                }
+            }
+        }
+        return true;
+    }
+    
+    /*
+     * Inicializa os formigueiros no mapa, inserindo-os em posições 
+     * predefinidas, caso haja espaço livre para alocá-los.
+     */
+    private void inicializarFormigueiros() {
+        int[][] posicoesFormigueiros = {
+            {2, 1},  // Formigueiro 1
+            {16, 1}, // Formigueiro 2
+            {32, 1}  // Formigueiro 3
+        };
+
+        for (int[] posicao : posicoesFormigueiros) {
+            Localizacao localizacao = new Localizacao(posicao[0], posicao[1]);
+            if (isAreaLivre(localizacao, 3, 3)) {
+                Formigueiro formigueiro = new Formigueiro(localizacao, "/Imagens/formigueiro.png", this);
+                formigueiros.add(formigueiro);
+                for (int x = 0; x < 3; x++) {
+                    for (int y = 0; y < 3; y++) {
+                        int novoX = localizacao.getX() + x;
+                        int novoY = localizacao.getY() + y;
+                        if (novoX < largura && novoY < altura) {
+                            itensFormigueiros[novoY][novoX] = formigueiro;
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Não foi possível adicionar formigueiro em: " + localizacao);
+            }
+        }
+    }
+
+    /*
+     * Essa função adiciona obstáculos aleatórios ao mapa. Para cada obstáculo, ele 
+     * tenta encontrar um espaço livre de 3x3 para alocá-lo. Se o espaço estiver 
+     * livre, o obstáculo é colocado no mapa.
+     */
     public void adicionarObstaculosAleatorios() {
         Random rand = new Random();
-        int quantidadeObstaculos = 10; // Quantidade de obstáculos no mapa
+        int quantidadeObstaculos = 20;
+    
         for (int i = 0; i < quantidadeObstaculos; i++) {
-            int x = rand.nextInt(largura);
-            int y = rand.nextInt(altura);
-            Localizacao localizacao = new Localizacao(x, y);
-
-            // Escolhe aleatoriamente o tipo de obstáculo
-            Obstaculo obstaculo;
-            int tipo = rand.nextInt(3);
-            if (tipo == 0) {
-                obstaculo = new Tamandua(localizacao);
-            } else if (tipo == 1) {
-                obstaculo = new Vento(localizacao);
-            } else {
-                obstaculo = new Lama(localizacao);
+            boolean colocado = false;
+            while (!colocado) {
+                int x = rand.nextInt(largura - 2);
+                int y = rand.nextInt(altura - 2);
+                Localizacao localizacao = new Localizacao(x, y);
+    
+                Obstaculo obstaculo;
+                int tipo = rand.nextInt(3);
+                if (tipo == 0) {
+                    obstaculo = new Tamandua(localizacao);
+                } else if (tipo == 1) {
+                    obstaculo = new Vento(localizacao);
+                } else {
+                    obstaculo = new Lama(localizacao);
+                }
+    
+                int[] tamanho = obstaculo.getTamanho();
+                if (isAreaLivre(localizacao, tamanho[0], tamanho[1])) {
+                    for (int deslocamentoX = 0; deslocamentoX < tamanho[0]; deslocamentoX++) {
+                        for (int deslocamentoY = 0; deslocamentoY < tamanho[1]; deslocamentoY++) {
+                            int novoX = x + deslocamentoX;
+                            int novoY = y + deslocamentoY;
+                            if (novoX < largura && novoY < altura) {
+                                itensObstaculos[novoY][novoX] = obstaculo;
+                            }
+                        }
+                    }
+                    adicionarObstaculo(obstaculo);
+                    colocado = true;
+                }
             }
-
-            adicionarObstaculo(obstaculo);
         }
     }
 
@@ -108,23 +181,6 @@ public class Mapa {
         return null;
     }
 
-
-    private void inicializarFormigueiros() {
-        // Definir as posições fixas
-        int[][] posicoesFormigueiros = {
-            {0, 1},  // Formigueiro 1
-            //{0, 4},  // Formigueiro 2
-            //{0, 7}   // Formigueiro 3
-        };
-
-        // Criar e adicionar formigueiros automaticamente
-        for (int[] posicao : posicoesFormigueiros) {
-            Localizacao localizacao = new Localizacao(posicao[0], posicao[1]);
-            Formigueiro formigueiro = new Formigueiro(localizacao, "/Imagens/formigueiro.png", this);
-            formigueiros.add(formigueiro);
-            itensFormigueiros[localizacao.getY()][localizacao.getX()] = formigueiro; // Adicionar à matriz
-        }
-    }
 
     // Método para exibir o mapa
     /*
