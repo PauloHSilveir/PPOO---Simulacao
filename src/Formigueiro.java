@@ -36,7 +36,6 @@ public class Formigueiro extends ElementoTerreno {
             return; // Ignora se já foi removida
         }
 
-        System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
 
         formiga.setEstado("REMOVIDA");
         formiga.setVisivel(false);
@@ -94,8 +93,6 @@ public class Formigueiro extends ElementoTerreno {
      
     
     private void atenderFormiga(Formiga formiga) {
-        System.out.println("[Formigueiro-" + id + "] Iniciando atendimento da Formiga-" + 
-                          formiga.getId() + " por " + formiga.getTempoNoFormigueiro() + "ms");
         
         new Thread(() -> {
             try {
@@ -120,35 +117,6 @@ public class Formigueiro extends ElementoTerreno {
         }).start();
     }
     
-    
-    /*private void sair(Formiga formiga) {
-        System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
-    
-        // Remover do mapa
-        mapa.removerItem(formiga);
-        formiga.setFormigaAFrente(null);
-        formiga.setEstado("REMOVIDA"); // Finaliza a formiga da simulação
-    
-        lock.lock();
-        try {
-            if (!filaDeEspera.isEmpty()) {
-                Formiga proximaFormiga = filaDeEspera.poll();
-                System.out.println("[Formigueiro-" + id + "] Próxima formiga da fila: Formiga-" + proximaFormiga.getId());
-    
-                proximaFormiga.setFormigaAFrente(null);
-                proximaFormiga.setEstado("PARADA"); // Mantém parada até entrar
-                atenderFormiga(proximaFormiga);
-    
-                atualizarReferenciasDaFila();
-            } else {
-                System.out.println("[Formigueiro-" + id + "] Fila vazia, formigueiro disponível");
-                ocupado = false;
-                ultimaFormigaNaFila = null;
-            }
-        } finally {
-            lock.unlock();
-        }
-    } */  
     private void posicionarNaFila(Formiga formiga) {
         filaDeEspera.add(formiga);
         formiga.setEstado("NA_FILA");
@@ -156,9 +124,6 @@ public class Formigueiro extends ElementoTerreno {
         // Calculate the correct position in the queue
         int posicaoNaFila = filaDeEspera.size() - 1; // 0-based index
         Localizacao posicaoFila = calcularPosicaoNaFila(posicaoNaFila);
-        
-        System.out.println("[Formigueiro-" + id + "] Posicionando Formiga-" + formiga.getId() + 
-                          " na posição " + posicaoFila + " da fila");
         
         // Update ant's position and destination
         formiga.setLocalizacaoAtual(posicaoFila);

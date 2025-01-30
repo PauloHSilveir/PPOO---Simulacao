@@ -24,7 +24,6 @@ public class Formiga extends ElementoTerreno {
         this.formigaAFrente = null;
         this.estado = "MOVENDO";
         this.visivel = true;
-        System.out.println("[Formiga-" + id + "] Criada na posição " + localizacao);
     }
 
     public int getId() {
@@ -44,7 +43,6 @@ public class Formiga extends ElementoTerreno {
         if (localizacaoAtual != null) {
             super.setLocalizacao(localizacaoAtual);
             this.localizacaoAtual = localizacaoAtual;
-            //System.out.println("[Formiga-" + getId() + "] Nova posição: " + localizacaoAtual);
         }
     }
 
@@ -78,10 +76,6 @@ public class Formiga extends ElementoTerreno {
 
     public void setVisivel(boolean visivel) {
         this.visivel = visivel;
-        // Se estiver usando algum sistema de renderização, atualize a visibilidade
-        if (!visivel) {
-            System.out.println("[Formiga-" + getId() + "] Tornada invisível e removida da simulação");
-        }
     }
 
     public boolean isVisivel() {
@@ -124,7 +118,6 @@ public class Formiga extends ElementoTerreno {
     
             // If reached formigueiro
             if (localizacaoAtual.equals(localizacaoDestino) && formigueiroDestino != null) {
-                System.out.println("[Formiga-" + getId() + "] Chegou ao formigueiro");
                 formigueiroDestino.entrar(this);
             } else {
                 // Espera um tempo baseado na velocidade antes de se mover novamente
