@@ -10,7 +10,7 @@ public class Formiga extends ElementoTerreno {
     private Formigueiro formigueiroDestino;
 
     private int velocidade = 1;
-    private int id;
+    private final int id;
     private static int nextId = 1;
     private int tempoNoFormigueiro;
     private String estado;

@@ -57,6 +57,11 @@ public class Formigueiro extends ElementoTerreno {
             System.out.println("Ocupado: " + ocupado);
             System.out.println("Tamanho da fila: " + fila.size());
     
+            // Registrar a entrada da formiga nas estatísticas
+            // Calcula o índice do formigueiro baseado na sua posição horizontal
+            int indiceFormigueiro = localizacao.getX() / 14; // Considerando os formigueiros em x=2, x=16 e x=32
+            Simulacao.getEstatisticas().registrarEntradaFormigueiro(indiceFormigueiro, formiga.getId());
+    
             if (!isOcupado() && fila.isEmpty()) {
                 ocupado = true;
                 atenderFormiga(formiga);
