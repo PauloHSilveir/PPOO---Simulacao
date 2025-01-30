@@ -3,6 +3,10 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/**
+ * Classe que representa a janela de simulação. 
+ * A janela exibe o mapa da simulação.
+ */
 public class JanelaSimulacao extends JFrame {
     private final Mapa mapa;
     private final VisaoMapa visaoMapa;

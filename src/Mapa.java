@@ -66,7 +66,6 @@ public class Mapa {
      * @param alturaArea Altura da área a verificar
      * @return true se a área estiver livre, false caso contrário
      */
-
     private boolean isAreaLivreComDistancia(Localizacao localizacao, int larguraArea, int alturaArea) {
         // Verifica limites do mapa
         if (localizacao.getX() + larguraArea > largura || 

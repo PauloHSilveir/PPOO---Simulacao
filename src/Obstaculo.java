@@ -1,7 +1,7 @@
 public abstract class Obstaculo extends ElementoTerreno {
     
     /**
-     * 
+     *  Construtor para objetos da classe Obstaculo.
      */
     public Obstaculo(Localizacao localizacao, String caminhoImagem) {
         super(localizacao, caminhoImagem);

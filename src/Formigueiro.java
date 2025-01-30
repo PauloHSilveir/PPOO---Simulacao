@@ -3,6 +3,10 @@ import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Classe que representa um formigueiro
+ * 
+ */
 public class Formigueiro extends ElementoTerreno {
     private volatile boolean ocupado;
     private final Mapa mapa;

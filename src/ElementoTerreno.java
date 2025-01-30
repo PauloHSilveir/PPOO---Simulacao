@@ -1,9 +1,14 @@
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
+/**
+ * Classe abstrata que representa um elemento do terreno
+ * 
+ * @version 1.0
+ */
 public abstract class ElementoTerreno {
     private Localizacao localizacao;
-    private Image imagemObstaculo;
+    private final Image imagemObstaculo;
     
     /**
      * Construtor da classe ElementoTerreno

@@ -3,6 +3,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Classe que representa a simulação do sistema.
+ * A simulação é composta por formigas, obstáculos e formigueiros.
+ */
 public class Simulacao {
     private List<Formiga> formigas;
     private JanelaSimulacao janelaSimulacao;

@@ -1,4 +1,9 @@
 import java.util.Random;
+
+/**
+ * Classe que representa uma formiga
+ * 
+ */
 public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoAtual;
     private Localizacao localizacaoDestino;

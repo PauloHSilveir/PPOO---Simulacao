@@ -1,4 +1,9 @@
 public class EstatisticasSimulacao {
+
+    /**
+     * Classe que armazena as estatísticas da simulação
+     * 
+     */
     private int[] formigasPorFormigueiro;
     private int formigasAfetadasPorTamandua;
     private int formigasAfetadasPorLama;
