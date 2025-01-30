@@ -6,6 +6,9 @@ import java.util.Random;
  * Representa um mapa com todos os itens que participam da simulacao.
  */
 public class Mapa {
+    private static final int DISTANCIA_MINIMA = 5; // Distância mínima entre obstáculos
+    private static final int DISTANCIA_FORMIGUEIRO = 8; // Distância mínima entre formigueiros
+
     private ElementoTerreno[][] itensMapa;
     private Formiga[][] itens;
     private Obstaculo[][] itensObstaculos;
@@ -31,6 +34,83 @@ public class Mapa {
 
         inicializarFormigueiros(); // Adicionar formigueiros automaticamente
     }
+    private boolean isAreaLivreComDistancia(Localizacao localizacao, int larguraArea, int alturaArea) {
+        // Verifica limites do mapa
+        if (localizacao.getX() + larguraArea > largura || 
+            localizacao.getY() + alturaArea > altura ||
+            localizacao.getX() < 0 || localizacao.getY() < 0) {
+            return false;
+        }
+
+        // Verifica área imediata
+        for (int x = localizacao.getX(); x < localizacao.getX() + larguraArea; x++) {
+            for (int y = localizacao.getY(); y < localizacao.getY() + alturaArea; y++) {
+                if (itensFormigueiros[y][x] != null || 
+                    itensObstaculos[y][x] != null || 
+                    itens[y][x] != null) {
+                    return false;
+                }
+            }
+        }
+
+        // Verifica distância dos formigueiros
+        for (Formigueiro formigueiro : formigueiros) {
+            int distX = Math.abs(localizacao.getX() - formigueiro.getLocalizacao().getX());
+            int distY = Math.abs(localizacao.getY() - formigueiro.getLocalizacao().getY());
+            if (distX < DISTANCIA_FORMIGUEIRO && distY < DISTANCIA_FORMIGUEIRO) {
+                return false;
+            }
+        }
+
+        // Verifica distância de outros obstáculos
+        for (Obstaculo outro : obstaculos) {
+            int distX = Math.abs(localizacao.getX() - outro.getLocalizacao().getX());
+            int distY = Math.abs(localizacao.getY() - outro.getLocalizacao().getY());
+            if (distX < DISTANCIA_MINIMA && distY < DISTANCIA_MINIMA) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+        public void adicionarObstaculosAleatorios() {
+            Random rand = new Random();
+            int quantidadeObstaculos = 20;
+            int tentativasMaximas = 100;
+    
+            for (int i = 0; i < quantidadeObstaculos; i++) {
+                boolean colocado = false;
+                int tentativas = 0;
+    
+                while (!colocado && tentativas < tentativasMaximas) {
+                    int x = rand.nextInt(largura - 5); // Margem para evitar bordas
+                    int y = rand.nextInt(altura - 5);  // Margem para evitar bordas
+                    Localizacao localizacao = new Localizacao(x, y);
+    
+                    Obstaculo obstaculo;
+                    int tipo = rand.nextInt(3);
+                    obstaculo = switch (tipo) {
+                        case 0 -> new Tamandua(localizacao);
+                        case 1 -> new Vento(localizacao);
+                        default -> new Lama(localizacao);
+                    };
+    
+                    int[] tamanho = obstaculo.getTamanho();
+                    if (isAreaLivreComDistancia(localizacao, tamanho[0], tamanho[1])) {
+                        // Marca área como ocupada
+                        for (int dx = 0; dx < tamanho[0]; dx++) {
+                            for (int dy = 0; dy < tamanho[1]; dy++) {
+                                itensObstaculos[y + dy][x + dx] = obstaculo;
+                            }
+                        }
+                        obstaculos.add(obstaculo);
+                        colocado = true;
+                    }
+                    tentativas++;
+                }
+            }
+        }
 
     /**
      * Cria mapa com tamanho padrão.
@@ -125,44 +205,6 @@ public class Mapa {
      * tenta encontrar um espaço livre de 3x3 para alocá-lo. Se o espaço estiver 
      * livre, o obstáculo é colocado no mapa.
      */
-    public void adicionarObstaculosAleatorios() {
-        Random rand = new Random();
-        int quantidadeObstaculos = 20;
-    
-        for (int i = 0; i < quantidadeObstaculos; i++) {
-            boolean colocado = false;
-            while (!colocado) {
-                int x = rand.nextInt(largura - 2);
-                int y = rand.nextInt(altura - 2);
-                Localizacao localizacao = new Localizacao(x, y);
-    
-                Obstaculo obstaculo;
-                int tipo = rand.nextInt(3);
-                if (tipo == 0) {
-                    obstaculo = new Tamandua(localizacao);
-                } else if (tipo == 1) {
-                    obstaculo = new Vento(localizacao);
-                } else {
-                    obstaculo = new Lama(localizacao);
-                }
-    
-                int[] tamanho = obstaculo.getTamanho();
-                if (isAreaLivre(localizacao, tamanho[0], tamanho[1])) {
-                    for (int deslocamentoX = 0; deslocamentoX < tamanho[0]; deslocamentoX++) {
-                        for (int deslocamentoY = 0; deslocamentoY < tamanho[1]; deslocamentoY++) {
-                            int novoX = x + deslocamentoX;
-                            int novoY = y + deslocamentoY;
-                            if (novoX < largura && novoY < altura) {
-                                itensObstaculos[novoY][novoX] = obstaculo;
-                            }
-                        }
-                    }
-                    adicionarObstaculo(obstaculo);
-                    colocado = true;
-                }
-            }
-        }
-    }
 
     public void adicionarObstaculo(Obstaculo obstaculo) {
         obstaculos.add(obstaculo);

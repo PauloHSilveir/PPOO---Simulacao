@@ -44,7 +44,7 @@ public class Formiga extends ElementoTerreno {
         if (localizacaoAtual != null) {
             super.setLocalizacao(localizacaoAtual);
             this.localizacaoAtual = localizacaoAtual;
-            System.out.println("[Formiga-" + getId() + "] Nova posição: " + localizacaoAtual);
+            //System.out.println("[Formiga-" + getId() + "] Nova posição: " + localizacaoAtual);
         }
     }
 
