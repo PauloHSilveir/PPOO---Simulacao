@@ -6,6 +6,10 @@ public class EstatisticasSimulacao {
     private java.util.Set<Integer> formigasRegistradas; // Conjunto para controlar formigas já registradas
     private java.util.Set<Integer> formigasAfetadasRegistradas; // Conjunto para controlar formigas afetadas já registradas
 
+    /**
+     * Construtor da classe EstatisticasSimulacao
+     * @param numFormigueiros
+     */
     public EstatisticasSimulacao(int numFormigueiros) {
         this.formigasPorFormigueiro = new int[numFormigueiros];
         this.formigasAfetadasPorTamandua = 0;
@@ -14,6 +18,11 @@ public class EstatisticasSimulacao {
         this.formigasAfetadasRegistradas = new java.util.HashSet<>();
     }
 
+    /**
+     * Registra a entrada de uma formiga em um formigueiro
+     * @param indiceFormigueiro
+     * @param formigaId
+     */
     public void registrarEntradaFormigueiro(int indiceFormigueiro, int formigaId) {
         if (!formigasRegistradas.contains(formigaId)) {
             formigasPorFormigueiro[indiceFormigueiro]++;
@@ -21,6 +30,10 @@ public class EstatisticasSimulacao {
         }
     }
 
+    /**
+     * Registra uma formiga afetada por um obstáculo
+     * @param formigaId
+     */
     public void registrarAfetadaPorTamandua(int formigaId) {
         if (!formigasAfetadasRegistradas.contains(formigaId)) {
             formigasAfetadasPorTamandua++;
@@ -28,6 +41,10 @@ public class EstatisticasSimulacao {
         }
     }
 
+    /**
+     * Registra uma formiga afetada por lama
+     * @param formigaId
+     */
     public void registrarAfetadaPorLama(int formigaId) {
         if (!formigasAfetadasRegistradas.contains(formigaId)) {
             formigasAfetadasPorLama++;
@@ -35,6 +52,10 @@ public class EstatisticasSimulacao {
         }
     }
 
+    /**
+     * Registra uma formiga afetada por vento
+     * @param formigaId
+     */
     public void registrarAfetadaPorVento(int formigaId) {
         if (!formigasAfetadasRegistradas.contains(formigaId)) {
             formigasAfetadasPorVento++;
@@ -42,6 +63,9 @@ public class EstatisticasSimulacao {
         }
     }
 
+    /**
+     * Retorna a quantidade de formigas por formigueiro
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

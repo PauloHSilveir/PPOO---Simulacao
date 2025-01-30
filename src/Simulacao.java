@@ -13,6 +13,9 @@ public class Simulacao {
         return estatisticas;
     }
 
+    /**
+     * Cria uma nova simulação com formigas e obstáculos.
+     */
     public Simulacao() {
         Random rand = new Random();
         mapa = new Mapa();
@@ -50,6 +53,11 @@ public class Simulacao {
         janelaSimulacao = new JanelaSimulacao(mapa);
     }
 
+    /**
+     * Verifica se a posição é válida para a formiga.
+     * @param loc A localização a ser verificada.
+     * @return true se a posição é válida, false caso contrário.
+     */
     private boolean isPosicaoValida(Localizacao loc) {
         // Verifica se a posição está livre de obstáculos
         for (Obstaculo obstaculo : mapa.getObstaculos()) {
@@ -62,6 +70,11 @@ public class Simulacao {
         return true;
     }
 
+    /**
+     * Encontra o formigueiro mais próximo da formiga.
+     * @param formiga A formiga que deseja encontrar o formigueiro mais próximo.
+     * @return O formigueiro mais próximo.
+     */
     private Formigueiro encontrarFormigueiroMaisProximo(Formiga formiga) {
         List<Formigueiro> formigueiros = mapa.getFormigueiros();
         if (formigueiros.isEmpty()) return null;
@@ -80,6 +93,12 @@ public class Simulacao {
         return maisProximo;
     }
 
+    /**
+     * Calcula a distância entre duas localizações.
+     * @param loc1 A primeira localização.
+     * @param loc2 A segunda localização.
+     * @return A distância entre as localizações.
+     */
     private double calcularDistancia(Localizacao loc1, Localizacao loc2) {
         int dx = loc1.getX() - loc2.getX();
         int dy = loc1.getY() - loc2.getY();
@@ -110,6 +129,10 @@ public class Simulacao {
         janelaSimulacao.executarAcao();
     }
     
+    /**
+     * Verifica se a formiga colidiu com algum obstáculo.
+     * @param formiga A formiga a ser verificada.
+     */
     private void verificarColisaoComObstaculos(Formiga formiga) {
         Localizacao locFormiga = formiga.getLocalizacao();
     
@@ -129,6 +152,10 @@ public class Simulacao {
     }
     
 
+    /**
+     * Executa a simulação por um número de passos.
+     * @param numPassos O número de passos a ser executado.
+     */
     public void executarSimulacao(int numPassos) {
         for (int i = 0; i < numPassos; i++) {
             executarUmPasso();
@@ -138,6 +165,10 @@ public class Simulacao {
         System.out.println(estatisticas.toString());
     }
     
+    /**
+     * Espera por um número de milisegundos.
+     * @param milisegundos O número de milisegundos a esperar.
+     */
     private void esperar(int milisegundos) {
         try {
             Thread.sleep(milisegundos);

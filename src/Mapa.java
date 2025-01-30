@@ -3,25 +3,48 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Representa um mapa com todos os itens que participam da simulacao.
+ * Representa um mapa que contém e gerencia todos os elementos da simulação.
+ * O mapa é responsável por controlar a disposição dos formigueiros, formigas e obstáculos,
+ * garantindo as regras de distanciamento e posicionamento.
+ * 
  */
 public class Mapa {
-    private static final int DISTANCIA_MINIMA = 5; // Distância mínima entre obstáculos
-    private static final int DISTANCIA_FORMIGUEIRO = 8; // Distância mínima entre formigueiros
+    /** Distância mínima necessária entre obstáculos */
+    private static final int DISTANCIA_MINIMA = 5;
 
+    /** Distância mínima necessária entre formigueiros */
+    private static final int DISTANCIA_FORMIGUEIRO = 8;
+
+    /** Matriz que armazena elementos do terreno */
     private ElementoTerreno[][] itensMapa;
+    /** Matriz que controla posição das formigas */
     private Formiga[][] itens;
+
+    /** Matriz que controla posição dos obstáculos */
     private Obstaculo[][] itensObstaculos;
+    
+    /** Matriz que controla posição dos formigueiros */
     private Formigueiro[][] itensFormigueiros;
 
     private int largura;
+    
     private int altura;
-    private List<Formigueiro> formigueiros; // Lista de formigueiros no mapa
+
+    private List<Formigueiro> formigueiros;
     private List<Obstaculo> obstaculos;
 
+    /** Largura padrão do mapa */
     private static final int LARGURA_PADRAO = 35;
+
+    /** Altura padrão do mapa */
     private static final int ALTURA_PADRAO = 35;
 
+    /**
+     * Constrói um novo mapa com dimensões especificadas.
+     * 
+     * @param largura A largura do mapa
+     * @param altura A altura do mapa
+     */
     public Mapa(int largura, int altura) {
         this.largura = largura;
         this.altura = altura;
@@ -34,6 +57,16 @@ public class Mapa {
 
         inicializarFormigueiros(); // Adicionar formigueiros automaticamente
     }
+
+    /**
+     * Verifica se uma área específica está livre, respeitando distâncias mínimas.
+     * 
+     * @param localizacao Posição inicial a ser verificada
+     * @param larguraArea Largura da área a verificar
+     * @param alturaArea Altura da área a verificar
+     * @return true se a área estiver livre, false caso contrário
+     */
+
     private boolean isAreaLivreComDistancia(Localizacao localizacao, int larguraArea, int alturaArea) {
         // Verifica limites do mapa
         if (localizacao.getX() + larguraArea > largura || 
@@ -74,72 +107,106 @@ public class Mapa {
         return true;
     }
     
-        public void adicionarObstaculosAleatorios() {
-            Random rand = new Random();
-            int quantidadeObstaculos = 20;
-            int tentativasMaximas = 100;
-    
-            for (int i = 0; i < quantidadeObstaculos; i++) {
-                boolean colocado = false;
-                int tentativas = 0;
-    
-                while (!colocado && tentativas < tentativasMaximas) {
-                    int x = rand.nextInt(largura - 5); // Margem para evitar bordas
-                    int y = rand.nextInt(altura - 5);  // Margem para evitar bordas
-                    Localizacao localizacao = new Localizacao(x, y);
-    
-                    Obstaculo obstaculo;
-                    int tipo = rand.nextInt(3);
-                    obstaculo = switch (tipo) {
-                        case 0 -> new Tamandua(localizacao);
-                        case 1 -> new Vento(localizacao);
-                        default -> new Lama(localizacao);
-                    };
-    
-                    int[] tamanho = obstaculo.getTamanho();
-                    if (isAreaLivreComDistancia(localizacao, tamanho[0], tamanho[1])) {
-                        // Marca área como ocupada
-                        for (int dx = 0; dx < tamanho[0]; dx++) {
-                            for (int dy = 0; dy < tamanho[1]; dy++) {
-                                itensObstaculos[y + dy][x + dx] = obstaculo;
-                            }
+    /**
+     * Adiciona obstáculos aleatoriamente no mapa.
+     * Gera diferentes tipos de obstáculos (Tamandua, Vento, Lama) em posições aleatórias,
+     * respeitando as regras de distanciamento.
+     */
+    public void adicionarObstaculosAleatorios() {
+        Random rand = new Random();
+        int quantidadeObstaculos = 20;
+        int tentativasMaximas = 100;
+
+        for (int i = 0; i < quantidadeObstaculos; i++) {
+            boolean colocado = false;
+            int tentativas = 0;
+
+            while (!colocado && tentativas < tentativasMaximas) {
+                int x = rand.nextInt(largura - 5); // Margem para evitar bordas
+                int y = rand.nextInt(altura - 5);  // Margem para evitar bordas
+                Localizacao localizacao = new Localizacao(x, y);
+
+                Obstaculo obstaculo;
+                int tipo = rand.nextInt(3);
+                obstaculo = switch (tipo) {
+                    case 0 -> new Tamandua(localizacao);
+                    case 1 -> new Vento(localizacao);
+                    default -> new Lama(localizacao);
+                };
+
+                int[] tamanho = obstaculo.getTamanho();
+                if (isAreaLivreComDistancia(localizacao, tamanho[0], tamanho[1])) {
+                    // Marca área como ocupada
+                    for (int dx = 0; dx < tamanho[0]; dx++) {
+                        for (int dy = 0; dy < tamanho[1]; dy++) {
+                            itensObstaculos[y + dy][x + dx] = obstaculo;
                         }
-                        obstaculos.add(obstaculo);
-                        colocado = true;
                     }
-                    tentativas++;
+                    obstaculos.add(obstaculo);
+                    colocado = true;
                 }
+                tentativas++;
             }
         }
+    }
 
-    /**
-     * Cria mapa com tamanho padrão.
-     */
     public Mapa() {
         this(LARGURA_PADRAO, ALTURA_PADRAO);
     }
 
+    /**
+     * Adiciona uma formiga ao mapa na posição especificada pela sua localização
+     * 
+     * @param v A formiga a ser adicionada ao mapa
+     */
     public void adicionarItem(Formiga v) {
         itens[v.getLocalizacao().getX()][v.getLocalizacao().getY()] = v;
     }
 
+    /**
+     * Remove uma formiga do mapa na posição especificada pela sua localização
+     * 
+     * @param v A formiga a ser removida do mapa
+     */
     public void removerItem(Formiga v) {
         itens[v.getLocalizacao().getX()][v.getLocalizacao().getY()] = null;
     }
 
+    /**
+     * Adiciona um obstáculo ao mapa na posição especificada pela sua localização
+     * 
+     * @param v O obstáculo a ser adicionado ao mapa
+     */
     public void adicionarObstaculoA(Obstaculo v) {
         itensObstaculos[v.getLocalizacao().getX()][v.getLocalizacao().getY()] = v;
     }
 
+    /**
+     * Atualiza a posição de uma formiga no mapa, removendo-a da posição antiga
+     * e adicionando-a na nova posição
+     * 
+     * @param v A formiga cuja posição será atualizada
+     */
     public void atualizarMapa(Formiga v) {
         removerItem(v);
         adicionarItem(v);
     }
 
+    
+    /**
+     * Retorna a largura do mapa
+     * 
+     * @return int representando a largura do mapa
+     */
     public int getLargura() {
         return largura;
     }
 
+    /**
+     * Retorna a altura do mapa
+     * 
+     * @return int representando a altura do mapa
+     */
     public int getAltura() {
         return altura;
     }
@@ -148,10 +215,13 @@ public class Mapa {
         return itens[x][y];
     }
     
-    /*
-     * Verifica se uma área retangular no mapa está livre para ser ocupada por um item. Usa a 
-     * localização e as dimensões da área para checar se qualquer item já ocupa algum ponto 
-     * dessa área.
+    /**
+     * Verifica se uma área específica está livre, respeitando distâncias mínimas.
+     * 
+     * @param localizacao Posição inicial a ser verificada
+     * @param larguraArea Largura da área a verificar
+     * @param alturaArea Altura da área a verificar
+     * @return true se a área estiver livre, false caso contrário
      */
     public boolean isAreaLivre(Localizacao localizacao, int larguraArea, int alturaArea) {
         int inicioX = Math.max(0, localizacao.getX());
@@ -200,12 +270,12 @@ public class Mapa {
         }
     }
 
-    /*
-     * Essa função adiciona obstáculos aleatórios ao mapa. Para cada obstáculo, ele 
-     * tenta encontrar um espaço livre de 3x3 para alocá-lo. Se o espaço estiver 
-     * livre, o obstáculo é colocado no mapa.
-     */
 
+    /**
+     * Adiciona um item ao mapa na posição especificada pela sua localização
+     * 
+     * @param item O item a ser adicionado ao mapa
+     */
     public void adicionarObstaculo(Obstaculo obstaculo) {
         obstaculos.add(obstaculo);
     }
@@ -214,6 +284,12 @@ public class Mapa {
         return obstaculos;
     }
 
+    /**
+     * Retorna o obstáculo na posição especificada
+     * 
+     * @param localizacao A localização do obstáculo
+     * @return Obstaculo na posição especificada
+     */
     public Obstaculo getObstaculoNaPosicao(Localizacao localizacao) {
         for (Obstaculo obstaculo : obstaculos) {
             if (obstaculo.getLocalizacao().equals(localizacao)) {
@@ -223,38 +299,32 @@ public class Mapa {
         return null;
     }
 
-
-    // Método para exibir o mapa
-    /*
-    public void mostrarMapa() {
-        for (int i = 0; i < altura; i++) {
-            for (int j = 0; j < largura; j++) {
-                if (itensFormigueiros[i][j] instanceof Formigueiro) {
-                    System.out.print("[F] "); // Representar um formigueiro
-                } else {
-                    System.out.print("[ ] "); // Espaço vazio
-                }
-            }
-            System.out.println();
-        }
-    }*/
+    /**
+     * Adiciona um item ao mapa na posição especificada pela sua localização
+     * 
+     * @param item O item a ser adicionado ao mapa
+     */
     public void adicionarFormigueiro(Formigueiro formigueiro) {
         formigueiros.add(formigueiro);
     }
     
+    /**
+     * Retorna a lista de formigueiros no mapa
+     * 
+     * @return List<Formigueiro> representando a lista de formigueiros no mapa
+     */
     public List<Formigueiro> getFormigueiros() {
         return formigueiros;
     }
 
+    /**
+     * Retorna o formigueiro na posição especificada
+     * 
+     * @param localizacao A localização do formigueiro
+     * @return Formigueiro na posição especificada
+     */
     public ElementoTerreno getItemNaPosicao(Localizacao localizacao) {
         return itensMapa[localizacao.getX()][localizacao.getY()];
     }
-
-    /* 
-    public void moverVeiculo(Veiculo veiculo, Localizacao novaLocalizacao) {
-        removerItem(veiculo);  // Remove o veículo da posição antiga
-        veiculo.setLocalizacaoAtual(novaLocalizacao);
-        adicionarItem(veiculo);  // Adiciona o veículo na nova posição
-    }*/
     
 }

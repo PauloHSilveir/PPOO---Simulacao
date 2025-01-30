@@ -1,20 +1,29 @@
 public abstract class Obstaculo extends ElementoTerreno {
     
+    /**
+     * 
+     */
     public Obstaculo(Localizacao localizacao, String caminhoImagem) {
         super(localizacao, caminhoImagem);
 
     }
     
+    /**
+     * @return A localizacao do obstaculo.
+     */
     public Localizacao getLocalizacao() {
         return super.getLocalizacao();
        }
-    /*
-    public Image getImagem() {
-        return imagemObstaculo;
-    }*/
 
-    // Método abstrato para definir o comportamento do obstáculo
+    /**
+     * Afeta a formiga que entrou no obstaculo.
+     * @param formiga A formiga que entrou no obstaculo.
+     */
     public abstract void afetarFormiga(Formiga formiga);
 
+    /**
+     * Retorna o tamanho do obstaculo.
+     * @return O tamanho do obstaculo.
+     */
     public abstract int[] getTamanho();
 }

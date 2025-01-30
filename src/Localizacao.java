@@ -5,9 +5,9 @@ import java.util.Random;
  * @author David J. Barnes and Michael Kolling and Luiz Merschmann
  */
 public class Localizacao {
-    private int x;
-    private int y;
-    private static Random rand = new Random();
+    private final int x;
+    private final int y;
+    private final static Random rand = new Random();
     
     /**
      * Representa uma localização na cidade

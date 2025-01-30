@@ -1,10 +1,18 @@
 import java.util.Random;
 
 public class Vento extends Obstaculo {
+    /**
+     * Construtor para objetos da classe Vento.
+     * @param localizacao A localização do vento.
+     */
     public Vento(Localizacao localizacao) {
         super(localizacao, "/Imagens/vento.png");
     }
 
+    /**
+     * Afeta a formiga que entrou no vento.
+     * @param formiga A formiga que entrou no vento.
+     */
     @Override
     public void afetarFormiga(Formiga formiga) {
         // Empurra a formiga para uma direção aleatória
@@ -22,6 +30,10 @@ public class Vento extends Obstaculo {
         Simulacao.getEstatisticas().registrarAfetadaPorVento(formiga.getId());
     }
 
+    /**
+     * Retorna o tamanho do vento.
+     * @return O tamanho do vento.
+     */
     @Override
     public int[] getTamanho() {
         return new int[]{1, 1};

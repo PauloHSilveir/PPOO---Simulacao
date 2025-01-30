@@ -8,7 +8,7 @@ public class Formiga extends ElementoTerreno {
     private int tempoNoFormigueiro;
     
     private Formiga formigaAFrente;
-    private final int id; // Identificador único para cada formiga
+    private final int id; // ID único da formiga
     private static int nextId = 1; // Contador para gerar IDs únicos
     private String estado; // "PARADA", "MOVENDO", "REMOVIDA", "AFETADA", "NA_FILA"
     private boolean visivel;
@@ -27,19 +27,35 @@ public class Formiga extends ElementoTerreno {
         System.out.println("[Formiga-" + id + "] Criada na posição " + localizacao);
     }
 
+    /**
+     * Retorna o ID da formiga
+     * @return
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Retorna a localização atual da formiga
+     * @return
+     */
     @Override
     public Localizacao getLocalizacao() {
         return super.getLocalizacao();
     }
 
+    /**
+     * Retorna a localização atual da formiga
+     * @return
+     */
     public Localizacao getLocalizacaoDestino() {
         return localizacaoDestino;
     }
 
+    /**
+     * Retorna a localização atual da formiga
+     * @return
+     */
     public void setLocalizacaoAtual(Localizacao localizacaoAtual) {
         if (localizacaoAtual != null) {
             super.setLocalizacao(localizacaoAtual);
@@ -48,34 +64,66 @@ public class Formiga extends ElementoTerreno {
         }
     }
 
+    /**
+     * Retorna a localização atual da formiga
+     * @return
+     */
     public void setLocalizacaoDestino(Localizacao localizacaoDestino) {
         this.localizacaoDestino = localizacaoDestino;
     }
 
+    /**
+     * Retorna a localização atual da formiga
+     * @return
+     */
     public void setFormigueiroDestino(Formigueiro formigueiroDestino) {
         this.formigueiroDestino = formigueiroDestino;
     }
 
+    /**
+     * Retorna a localização atual da formiga
+     * @return
+     */
     public void setTempoNoFormigueiro(int tempo) {
         this.tempoNoFormigueiro = tempo;
     }
 
+    /**
+     * Retorna o Tempo que a formiga deve ficar no formigueiro
+     * @return
+     */
     public int getTempoNoFormigueiro() {
         return tempoNoFormigueiro;
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public void setFormigaAFrente(Formiga formiga) {
         this.formigaAFrente = formiga;
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public String getEstado() {
         return estado;
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public void setEstado(String estado) {
         this.estado = estado;
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public void setVisivel(boolean visivel) {
         this.visivel = visivel;
         // Se estiver usando algum sistema de renderização, atualize a visibilidade
@@ -84,22 +132,44 @@ public class Formiga extends ElementoTerreno {
         }
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public boolean isVisivel() {
         return visivel;
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public Formiga getFormigaAFrente() {
         return formigaAFrente;
     }
 
+    /**
+     * Retorna a formiga que está na frente
+     * @param novaVelocidade
+     */
     public void setVelocidade(int novaVelocidade) {
         this.velocidade = novaVelocidade;
     }
     
+
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public int getVelocidade() {
         return this.velocidade;
     }
     
+
+    /**
+     * Retorna a formiga que está na frente
+     * @return
+     */
     public void executarAcao() {
         // If removed or invisible, do nothing
         if ("REMOVIDA".equals(estado) || !isVisivel()) {
@@ -137,6 +207,9 @@ public class Formiga extends ElementoTerreno {
         }
     }
 
+    /**
+     * Move e jogue para frente
+     */
     public void moverParaFrente() {
         if ("NA_FILA".equals(estado)) {
             if (formigaAFrente != null) {
@@ -149,6 +222,9 @@ public class Formiga extends ElementoTerreno {
         }
     }
 
+    /**
+     * Move e jogue para trás
+     */
     @Override
     public String toString() {
         return "Formiga-" + id + " em " + getLocalizacao() +

@@ -7,6 +7,10 @@ public class JanelaSimulacao extends JFrame {
     private Mapa mapa;
     private VisaoMapa visaoMapa;
     
+    /**
+     * Cria uma nova janela de simulacao para exibir o mapa.
+     * @param mapa O mapa a ser exibido.
+     */
     public JanelaSimulacao(Mapa mapa) {
         this.mapa = mapa;
         visaoMapa = new VisaoMapa(mapa.getLargura(), mapa.getAltura());
@@ -17,6 +21,9 @@ public class JanelaSimulacao extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
+    /**
+     * Executa a acao de exibir o mapa.
+     */
     public void executarAcao() {
         visaoMapa.preparePaint();
         
@@ -51,11 +58,8 @@ public class JanelaSimulacao extends JFrame {
     }
     
     /**
-     * Fornece uma visualizacao grafica do mapa. Esta eh 
-     * uma classe interna que define os componentes da GUI.
-     * Ela contém alguns detalhes mais avancados sobre GUI 
-     * que voce pode ignorar para realizacao do seu trabalho.
-     */    
+     * Classe interna para exibir o mapa.
+     */
     private class VisaoMapa extends JPanel {
 
         private final int VIEW_SCALING_FACTOR = 6;
@@ -69,7 +73,9 @@ public class JanelaSimulacao extends JFrame {
         private Image backgroundImage;
 
         /**
-         * Cria um novo componente VisaoMapa.
+         * Cria uma nova visão do mapa.
+         * @param largura A largura do mapa.
+         * @param altura A altura do mapa.
          */
         public VisaoMapa(int largura, int altura) {
             larguraMapa = largura;
@@ -94,7 +100,7 @@ public class JanelaSimulacao extends JFrame {
         }
         
         /**
-         * Informa para o gerenciador GUI o tamanho.
+         * Retorna o tamanho preferido do componente.
          */
         public Dimension getPreferredSize() {
             return new Dimension(larguraMapa * VIEW_SCALING_FACTOR,
@@ -140,7 +146,11 @@ public class JanelaSimulacao extends JFrame {
         }
         
         /**
-         * Desenha a imagem para um determinado item.
+         * Desenha uma imagem no mapa.
+         * @param x A coordenada x.
+         * @param y A coordenada y.
+         * @param image A imagem a ser desenhada.
+         * @param usarEscalaAlternativa Se deve usar uma escala alternativa.
          */
         public void desenharImagem(int x, int y, Image image, boolean usarEscalaAlternativa) {
             int escala;
@@ -157,7 +167,8 @@ public class JanelaSimulacao extends JFrame {
         }
 
         /**
-         * O componente VisaoMapa precisa ser reexibido.
+         * Desenha a imagem do mapa.
+         * @param g O contexto gráfico.
          */
         public void paintComponent(Graphics g) {
             if (imagemMapa != null) {

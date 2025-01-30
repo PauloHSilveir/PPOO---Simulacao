@@ -15,6 +15,12 @@ public class Formigueiro extends ElementoTerreno {
     private static final int ESPACAMENTO_FILA = 1; // Spacing between ants in queue
     private final int indiceFormigueiro;
 
+    /**
+     *  Construtor para objetos da classe Formigueiro
+     * @param localizacao
+     * @param imagem
+     * @param mapa
+     */
     public Formigueiro(Localizacao localizacao, String imagem, Mapa mapa) {
         super(localizacao, imagem);
         this.id = nextId++;
@@ -27,10 +33,18 @@ public class Formigueiro extends ElementoTerreno {
         this.ultimaFormigaNaFila = null;
     }
 
+    /**
+     *  Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     public int getTamanhoFila() {
         return filaDeEspera.size() + (ocupado ? 1 : 0);
     }
     
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private void sair(Formiga formiga) {
         if (formiga.getEstado().equals("REMOVIDA")) {
             return; // Ignora se já foi removida
@@ -63,6 +77,10 @@ public class Formigueiro extends ElementoTerreno {
         }
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     public void entrar(Formiga formiga) {
         lock.lock();
         try {
@@ -92,7 +110,10 @@ public class Formigueiro extends ElementoTerreno {
         }
     }
      
-    
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private void atenderFormiga(Formiga formiga) {
         System.out.println("[Formigueiro-" + id + "] Iniciando atendimento da Formiga-" + 
                           formiga.getId() + " por " + formiga.getTempoNoFormigueiro() + "ms");
@@ -119,36 +140,11 @@ public class Formigueiro extends ElementoTerreno {
             }
         }).start();
     }
-    
-    
-    /*private void sair(Formiga formiga) {
-        System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
-    
-        // Remover do mapa
-        mapa.removerItem(formiga);
-        formiga.setFormigaAFrente(null);
-        formiga.setEstado("REMOVIDA"); // Finaliza a formiga da simulação
-    
-        lock.lock();
-        try {
-            if (!filaDeEspera.isEmpty()) {
-                Formiga proximaFormiga = filaDeEspera.poll();
-                System.out.println("[Formigueiro-" + id + "] Próxima formiga da fila: Formiga-" + proximaFormiga.getId());
-    
-                proximaFormiga.setFormigaAFrente(null);
-                proximaFormiga.setEstado("PARADA"); // Mantém parada até entrar
-                atenderFormiga(proximaFormiga);
-    
-                atualizarReferenciasDaFila();
-            } else {
-                System.out.println("[Formigueiro-" + id + "] Fila vazia, formigueiro disponível");
-                ocupado = false;
-                ultimaFormigaNaFila = null;
-            }
-        } finally {
-            lock.unlock();
-        }
-    } */  
+
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private void posicionarNaFila(Formiga formiga) {
         filaDeEspera.add(formiga);
         formiga.setEstado("NA_FILA");
@@ -180,6 +176,10 @@ public class Formigueiro extends ElementoTerreno {
         System.out.println("[Formigueiro-" + id + "] Estado atual da fila: " + formatarFilaDeEspera());
     }
     
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param posicaoNaFila
+     */
     private Localizacao calcularPosicaoNaFila(int posicaoNaFila) {
         // Calculate position based on formigueiro's location
         // Queue forms vertically downward from the formigueiro
@@ -189,6 +189,10 @@ public class Formigueiro extends ElementoTerreno {
         return new Localizacao(xFila, yFila);
     }
     
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private void atualizarPosicoesFila() {
         int posicao = 0;
         for (Formiga formiga : filaDeEspera) {
@@ -199,6 +203,10 @@ public class Formigueiro extends ElementoTerreno {
         }
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private String formatarFilaDeEspera() {
         StringBuilder sb = new StringBuilder();
         for (Formiga f : filaDeEspera) {
@@ -208,6 +216,10 @@ public class Formigueiro extends ElementoTerreno {
         return sb.toString();
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private void atualizarReferenciasDaFila() {
         if (filaDeEspera.isEmpty()) {
             ultimaFormigaNaFila = null;
@@ -222,19 +234,35 @@ public class Formigueiro extends ElementoTerreno {
         ultimaFormigaNaFila = formigaAnterior;
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     @Override
     public Localizacao getLocalizacao() {
         return localizacao;
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     public boolean isOcupped() {
         return ocupado;
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private Localizacao getPosicaoAtrasDoFormigueiro() {
         return new Localizacao(localizacao.getX(), localizacao.getY() + 1);
     }
 
+    /**
+     * Método que afeta a formiga que entrou no formigueiro
+     * @param formiga
+     */
     private Localizacao getPosicaoAtrasDeOutraFormiga(Formiga formiga) {
         Localizacao localizacaoAtual = formiga.getLocalizacao();
         return new Localizacao(localizacaoAtual.getX(), localizacaoAtual.getY() + 1);

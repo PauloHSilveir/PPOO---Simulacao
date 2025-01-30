@@ -5,6 +5,10 @@ public abstract class ElementoTerreno {
     private Localizacao localizacao;
     private Image imagemObstaculo;
     
+    /**
+     * Construtor da classe ElementoTerreno
+     * @param localizacao Localizacao do elemento no terreno
+     */
     ElementoTerreno(Localizacao localizacao, String caminhoImagem) {
         this.localizacao = localizacao;
         java.net.URL imgURL = getClass().getResource(caminhoImagem);
@@ -17,14 +21,26 @@ public abstract class ElementoTerreno {
         }
     } 
 
+    /**
+     * Método abstrato que será implementado pelas classes filhas
+     * @param terreno Terreno onde o elemento está
+     */
     public Localizacao getLocalizacao() {
         return localizacao;
     }
 
+    /**
+     * Método abstrato que será implementado pelas classes filhas
+     * @param terreno Terreno onde o elemento está
+     */
     public void setLocalizacao(Localizacao localizacao) {
         this.localizacao = localizacao;
     }
 
+    /**
+     * Método abstrato que será implementado pelas classes filhas
+     * @param terreno Terreno onde o elemento está
+     */
     public Image getImagem() {
         return imagemObstaculo;
     }   
