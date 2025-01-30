@@ -112,6 +112,11 @@ public class Formiga extends ElementoTerreno {
             return;
         }
 
+        if("PARADA".equals(estado)) {
+            // Do nothing if stopped
+            return;
+        }
+
         // Normal movement when not in queue
         if ("MOVENDO".equals(estado) && localizacaoDestino != null) {
             Localizacao proximaLocalizacao = localizacaoAtual.proximaLocalizacao(localizacaoDestino);

@@ -5,15 +5,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Formigueiro extends ElementoTerreno {
     private volatile boolean ocupado;
-    private Mapa mapa;
-    private Queue<Formiga> filaDeEspera;
-    private Localizacao localizacao;
+    private final Mapa mapa;
+    private final Queue<Formiga> filaDeEspera;
+    private final Localizacao localizacao;
     private final Lock lock;
     private Formiga ultimaFormigaNaFila;
-    private int id;
+    private final int id;
     private static int nextId = 1;
     private static final int ESPACAMENTO_FILA = 1; // Spacing between ants in queue
-    private int indiceFormigueiro;
+    private final int indiceFormigueiro;
 
     public Formigueiro(Localizacao localizacao, String imagem, Mapa mapa) {
         super(localizacao, imagem);
@@ -222,6 +222,7 @@ public class Formigueiro extends ElementoTerreno {
         ultimaFormigaNaFila = formigaAnterior;
     }
 
+    @Override
     public Localizacao getLocalizacao() {
         return localizacao;
     }
