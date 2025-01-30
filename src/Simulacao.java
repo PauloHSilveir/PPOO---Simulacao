@@ -8,27 +8,37 @@ public class Simulacao {
     private JanelaSimulacao janelaSimulacao;
     private Mapa mapa;
     private static EstatisticasSimulacao estatisticas;
+    private Random rand = new Random();
+    private int contadorPassos = 0;
+    private static final int INTERVALO_SPAWN = 1; // Spawna a cada 1 passo
+    private static final double CHANCE_SPAWN = 0.5; //Chance de Spawn
+    private static final int MAX_FORMIGAS_POR_SPAWN = 3; // Máximo de formigas que podem aparecer a cada spawn
+    
     
     public static EstatisticasSimulacao getEstatisticas() {
         return estatisticas;
     }
-
+    
     /**
      * Cria uma nova simulação com formigas e obstáculos.
      */
     public Simulacao() {
-        Random rand = new Random();
         mapa = new Mapa();
         formigas = new ArrayList<>();
-        estatisticas = new EstatisticasSimulacao(3); // 3 formigueiros
+        estatisticas = new EstatisticasSimulacao(3);
         
-        // Primeiro, adicionar obstáculos antes das formigas
+        // Adicionar obstáculos iniciais (apenas uma vez no início)
         mapa.adicionarObstaculosAleatorios();
         
-        // Depois, criar e adicionar formigas
-        int quantidadeFormigas = 10;
-        for (int i = 0; i < quantidadeFormigas; i++) {
-            // Gerar posição inicial válida (evitando obstáculos)
+        // Criar e adicionar formigas iniciais
+        spawnFormigas(10); // Começa com 10 formigas
+        
+        janelaSimulacao = new JanelaSimulacao(mapa);
+    }
+
+     // Novo método para spawnar formigas
+     private void spawnFormigas(int quantidade) {
+        for (int i = 0; i < quantidade; i++) {
             Localizacao localizacaoInicial;
             do {
                 localizacaoInicial = new Localizacao(
@@ -49,8 +59,6 @@ public class Simulacao {
             formigas.add(formiga);
             mapa.adicionarItem(formiga);
         }
-        
-        janelaSimulacao = new JanelaSimulacao(mapa);
     }
 
     /**
@@ -106,6 +114,17 @@ public class Simulacao {
     }
 
     private void executarUmPasso() {
+        contadorPassos++;
+        
+        // Tenta adicionar novas formigas periodicamente
+        if (contadorPassos % INTERVALO_SPAWN == 0) {
+            if (rand.nextDouble() < CHANCE_SPAWN) {
+                // Gera um número aleatório de formigas para spawnar (entre 1 e MAX_FORMIGAS_POR_SPAWN)
+                int quantidadeNovasFormigas = 1 + rand.nextInt(MAX_FORMIGAS_POR_SPAWN);
+                spawnFormigas(quantidadeNovasFormigas);
+            }
+        }
+
         Iterator<Formiga> iterator = formigas.iterator();
         while (iterator.hasNext()) {
             Formiga formiga = iterator.next();
@@ -176,5 +195,4 @@ public class Simulacao {
             System.out.println(e.getMessage());
         }
     }
-
 }

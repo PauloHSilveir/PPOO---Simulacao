@@ -6,237 +6,28 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Formigueiro extends ElementoTerreno {
     private volatile boolean ocupado;
     private final Mapa mapa;
-    private final Queue<Formiga> filaDeEspera;
+    private final Queue<Formiga> fila;
     private final Localizacao localizacao;
     private final Lock lock;
-    private Formiga ultimaFormigaNaFila;
-    private final int id;
-    private static int nextId = 1;
-    private static final int ESPACAMENTO_FILA = 1; // Spacing between ants in queue
-    private final int indiceFormigueiro;
 
     /**
-     *  Construtor para objetos da classe Formigueiro
-     * @param localizacao
-     * @param imagem
-     * @param mapa
+     * Cria um novo formigueiro.
+     * @param localizacao A localização do formigueiro.
+     * @param imagem A imagem do formigueiro.
+     * @param mapa O mapa onde o formigueiro está localizado.
      */
     public Formigueiro(Localizacao localizacao, String imagem, Mapa mapa) {
         super(localizacao, imagem);
-        this.id = nextId++;
-        this.indiceFormigueiro = id - 1; // índice 0-based para estatísticas
         this.localizacao = localizacao;
         this.ocupado = false;
-        this.filaDeEspera = new LinkedList<>();
+        this.fila = new LinkedList<>();
         this.mapa = mapa;
         this.lock = new ReentrantLock();
-        this.ultimaFormigaNaFila = null;
     }
 
     /**
-     *  Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    public int getTamanhoFila() {
-        return filaDeEspera.size() + (ocupado ? 1 : 0);
-    }
-    
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    private void sair(Formiga formiga) {
-        if (formiga.getEstado().equals("REMOVIDA")) {
-            return; // Ignora se já foi removida
-        }
-
-        System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() + " saindo");
-
-        formiga.setEstado("REMOVIDA");
-        formiga.setVisivel(false);
-        mapa.removerItem(formiga);
-        formiga.setFormigaAFrente(null);
-
-        // Registra a entrada da formiga nas estatísticas com o ID da formiga
-        Simulacao.getEstatisticas().registrarEntradaFormigueiro(indiceFormigueiro, formiga.getId());
-
-        lock.lock();
-        try {
-            if (!filaDeEspera.isEmpty()) {
-                Formiga proximaFormiga = filaDeEspera.poll();
-                proximaFormiga.setFormigaAFrente(null);
-                proximaFormiga.setEstado("EM_ATENDIMENTO");
-                atenderFormiga(proximaFormiga);
-                atualizarPosicoesFila();
-            } else {
-                ocupado = false;
-                ultimaFormigaNaFila = null;
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    public void entrar(Formiga formiga) {
-        lock.lock();
-        try {
-            System.out.println("\n=== Estado do Formigueiro-" + id + " ===");
-            System.out.println("Ocupado: " + ocupado);
-            System.out.println("Tamanho da fila: " + filaDeEspera.size());
-            if (!filaDeEspera.isEmpty()) {
-                System.out.println("Formigas na fila: " + formatarFilaDeEspera());
-            }
-    
-            // Se o formigueiro não estiver ocupado E não houver fila, entra direto
-            if (!ocupado && filaDeEspera.isEmpty()) {
-                System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() +
-                                   " entrando diretamente no formigueiro");
-                ocupado = true;
-                atenderFormiga(formiga);
-            } 
-            // Se estiver ocupado OU já houver fila, entra na fila
-            else {
-                System.out.println("[Formigueiro-" + id + "] Formiga-" + formiga.getId() +
-                                   " entrando na fila de espera");
-                posicionarNaFila(formiga);
-                formiga.setEstado("PARADA"); // Define estado da formiga
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-     
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    private void atenderFormiga(Formiga formiga) {
-        System.out.println("[Formigueiro-" + id + "] Iniciando atendimento da Formiga-" + 
-                          formiga.getId() + " por " + formiga.getTempoNoFormigueiro() + "ms");
-        
-        new Thread(() -> {
-            try {
-                // Simular o tempo de atendimento
-                Thread.sleep(formiga.getTempoNoFormigueiro());
-                
-                lock.lock();
-                try {
-                    System.out.println("[Formigueiro-" + id + "] Finalizando atendimento da Formiga-" + 
-                                     formiga.getId());
-                    
-                    // Remover e finalizar a formiga
-                    sair(formiga);
-                } finally {
-                    lock.unlock();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.err.println("[Formigueiro-" + id + "] Erro ao atender Formiga-" + 
-                                 formiga.getId() + ": " + e.getMessage());
-            }
-        }).start();
-    }
-
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    private void posicionarNaFila(Formiga formiga) {
-        filaDeEspera.add(formiga);
-        formiga.setEstado("NA_FILA");
-        
-        // Calculate the correct position in the queue
-        int posicaoNaFila = filaDeEspera.size() - 1; // 0-based index
-        Localizacao posicaoFila = calcularPosicaoNaFila(posicaoNaFila);
-        
-        System.out.println("[Formigueiro-" + id + "] Posicionando Formiga-" + formiga.getId() + 
-                          " na posição " + posicaoFila + " da fila");
-        
-        // Update ant's position and destination
-        formiga.setLocalizacaoAtual(posicaoFila);
-        formiga.setLocalizacaoDestino(posicaoFila);
-        
-        // Set reference to ant in front
-        if (posicaoNaFila > 0) {
-            Formiga formigaFrente = null;
-            for (Formiga f : filaDeEspera) {
-                if (f != formiga) {
-                    formigaFrente = f;
-                    break;
-                }
-            }
-            formiga.setFormigaAFrente(formigaFrente);
-        }
-        
-        ultimaFormigaNaFila = formiga;
-        System.out.println("[Formigueiro-" + id + "] Estado atual da fila: " + formatarFilaDeEspera());
-    }
-    
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param posicaoNaFila
-     */
-    private Localizacao calcularPosicaoNaFila(int posicaoNaFila) {
-        // Calculate position based on formigueiro's location
-        // Queue forms vertically downward from the formigueiro
-        int xFila = getLocalizacao().getX();
-        int yFila = getLocalizacao().getY() + ((posicaoNaFila) * ESPACAMENTO_FILA);
-        
-        return new Localizacao(xFila, yFila);
-    }
-    
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    private void atualizarPosicoesFila() {
-        int posicao = 0;
-        for (Formiga formiga : filaDeEspera) {
-            Localizacao novaPosicao = calcularPosicaoNaFila(posicao);
-            formiga.setLocalizacaoAtual(novaPosicao);
-            formiga.setLocalizacaoDestino(novaPosicao);
-            posicao++;
-        }
-    }
-
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    private String formatarFilaDeEspera() {
-        StringBuilder sb = new StringBuilder();
-        for (Formiga f : filaDeEspera) {
-            if (sb.length() > 0) sb.append(" -> ");
-            sb.append("Formiga-").append(f.getId());
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
-     */
-    private void atualizarReferenciasDaFila() {
-        if (filaDeEspera.isEmpty()) {
-            ultimaFormigaNaFila = null;
-            return;
-        }
-
-        Formiga formigaAnterior = null;
-        for (Formiga formiga : filaDeEspera) {
-            formiga.setFormigaAFrente(formigaAnterior);
-            formigaAnterior = formiga;
-        }
-        ultimaFormigaNaFila = formigaAnterior;
-    }
-
-    /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
+     * Retorna a localização do formigueiro.
+     * @return
      */
     @Override
     public Localizacao getLocalizacao() {
@@ -244,27 +35,116 @@ public class Formigueiro extends ElementoTerreno {
     }
 
     /**
-     * Método que afeta a formiga que entrou no formigueiro
-     * @param formiga
+     * Verifica se o formigueiro está ocupado.
+     * @return
      */
-    public boolean isOcupped() {
+    public boolean isOcupado() {
         return ocupado;
     }
 
     /**
-     * Método que afeta a formiga que entrou no formigueiro
+     * Entra uma formiga no formigueiro.
      * @param formiga
      */
-    private Localizacao getPosicaoAtrasDoFormigueiro() {
-        return new Localizacao(localizacao.getX(), localizacao.getY() + 1);
+    public void entrar(Formiga formiga) {
+        lock.lock();
+        try {
+            System.out.println("\n=== Estado do Formigueiro ===");
+            System.out.println("Ocupado: " + ocupado);
+            System.out.println("Tamanho da fila: " + fila.size());
+    
+            if (!isOcupado() && fila.isEmpty()) {
+                ocupado = true;
+                atenderFormiga(formiga);
+            } 
+            else {
+                posicionarNaFila(formiga);
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
-     * Método que afeta a formiga que entrou no formigueiro
+     * Atende uma formiga que está no formigueiro.
      * @param formiga
      */
-    private Localizacao getPosicaoAtrasDeOutraFormiga(Formiga formiga) {
-        Localizacao localizacaoAtual = formiga.getLocalizacao();
-        return new Localizacao(localizacaoAtual.getX(), localizacaoAtual.getY() + 1);
+    private void atenderFormiga(Formiga formiga) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(formiga.getTempoNoFormigueiro());
+                lock.lock();
+                try {
+                    sair(formiga);
+                } finally {
+                    lock.unlock();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
+    }
+
+  
+    private void posicionarNaFila(Formiga formiga) {
+        fila.add(formiga);
+        formiga.setEstado("NA_FILA");
+        
+        Localizacao posicaoFila = calcularPosicaoNaFila();
+        formiga.setLocalizacaoAtual(posicaoFila);
+    }
+    
+    /**
+     * Calcula a posição da formiga na fila.
+     * @return
+     */
+    private Localizacao calcularPosicaoNaFila() {
+        // Posicionar a formiga na fila
+        if(!fila.isEmpty()) {
+            int xFila = getLocalizacao().getX();
+            int yFila = getLocalizacao().getY() + (fila.size()-1);
+            return new Localizacao(xFila, yFila);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Atualiza as posições das formigas na fila.
+     */
+    private void atualizarPosicoesFila() {
+        for (Formiga formiga : fila) {
+            Localizacao novaPosicao = calcularPosicaoNaFila();
+            formiga.setLocalizacaoAtual(novaPosicao);
+        }
+    }
+    
+    /**
+     * Remove a formiga do formigueiro.
+     * @param formiga
+     */
+    private void sair(Formiga formiga) {
+        
+        formiga.setEstado("REMOVIDA");
+        formiga.setVisivel(false);
+        mapa.removerItem(formiga);
+    
+        lock.lock();
+        try {
+            if (!fila.isEmpty()) {
+
+                Formiga proximaFormiga = fila.poll();
+                proximaFormiga.setEstado("EM_ATENDIMENTO");
+                atenderFormiga(proximaFormiga);
+    
+                atualizarPosicoesFila();
+            } 
+            else {
+                System.out.println("Formigueiro disponivel");
+                ocupado = false;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 }

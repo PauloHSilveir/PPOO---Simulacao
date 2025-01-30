@@ -4,13 +4,11 @@ public class Formiga extends ElementoTerreno {
     private Localizacao localizacaoDestino;
     private Formigueiro formigueiroDestino;
 
-    private int velocidade = 50;
+    private int velocidade = 1;
+    private int id;
+    private static int nextId = 1;
     private int tempoNoFormigueiro;
-    
-    private Formiga formigaAFrente;
-    private final int id; // ID único da formiga
-    private static int nextId = 1; // Contador para gerar IDs únicos
-    private String estado; // "PARADA", "MOVENDO", "REMOVIDA", "AFETADA", "NA_FILA"
+    private String estado;
     private boolean visivel;
 
     public Formiga(Localizacao localizacao) {
@@ -21,10 +19,8 @@ public class Formiga extends ElementoTerreno {
         formigueiroDestino = null;
         Random randNum = new Random();
         this.tempoNoFormigueiro = 1000 + randNum.nextInt(1000);
-        this.formigaAFrente = null;
         this.estado = "MOVENDO";
         this.visivel = true;
-        System.out.println("[Formiga-" + id + "] Criada na posição " + localizacao);
     }
 
     /**
@@ -60,7 +56,6 @@ public class Formiga extends ElementoTerreno {
         if (localizacaoAtual != null) {
             super.setLocalizacao(localizacaoAtual);
             this.localizacaoAtual = localizacaoAtual;
-            //System.out.println("[Formiga-" + getId() + "] Nova posição: " + localizacaoAtual);
         }
     }
 
@@ -100,14 +95,6 @@ public class Formiga extends ElementoTerreno {
      * Retorna a formiga que está na frente
      * @return
      */
-    public void setFormigaAFrente(Formiga formiga) {
-        this.formigaAFrente = formiga;
-    }
-
-    /**
-     * Retorna a formiga que está na frente
-     * @return
-     */
     public String getEstado() {
         return estado;
     }
@@ -126,10 +113,6 @@ public class Formiga extends ElementoTerreno {
      */
     public void setVisivel(boolean visivel) {
         this.visivel = visivel;
-        // Se estiver usando algum sistema de renderização, atualize a visibilidade
-        if (!visivel) {
-            System.out.println("[Formiga-" + getId() + "] Tornada invisível e removida da simulação");
-        }
     }
 
     /**
@@ -138,14 +121,6 @@ public class Formiga extends ElementoTerreno {
      */
     public boolean isVisivel() {
         return visivel;
-    }
-
-    /**
-     * Retorna a formiga que está na frente
-     * @return
-     */
-    public Formiga getFormigaAFrente() {
-        return formigaAFrente;
     }
 
     /**
@@ -171,33 +146,27 @@ public class Formiga extends ElementoTerreno {
      * @return
      */
     public void executarAcao() {
-        // If removed or invisible, do nothing
         if ("REMOVIDA".equals(estado) || !isVisivel()) {
             return;
         }
 
-        // If in queue, maintain queue position
         if ("NA_FILA".equals(estado)) {
-            // Don't move if in queue - position is managed by Formigueiro
             return;
         }
 
         if("PARADA".equals(estado)) {
-            // Do nothing if stopped
             return;
         }
 
-        // Normal movement when not in queue
         if ("MOVENDO".equals(estado) && localizacaoDestino != null) {
             Localizacao proximaLocalizacao = localizacaoAtual.proximaLocalizacao(localizacaoDestino);
             setLocalizacaoAtual(proximaLocalizacao);
     
-            // If reached formigueiro
             if (localizacaoAtual.equals(localizacaoDestino) && formigueiroDestino != null) {
-                System.out.println("[Formiga-" + getId() + "] Chegou ao formigueiro");
+                
                 formigueiroDestino.entrar(this);
             } else {
-                // Espera um tempo baseado na velocidade antes de se mover novamente
+                
                 try {
                     Thread.sleep(velocidade);
                 } catch (InterruptedException e) {
@@ -207,27 +176,12 @@ public class Formiga extends ElementoTerreno {
         }
     }
 
-    /**
-     * Move e jogue para frente
-     */
-    public void moverParaFrente() {
-        if ("NA_FILA".equals(estado)) {
-            if (formigaAFrente != null) {
-                Localizacao locFormigaFrente = formigaAFrente.getLocalizacao();
-                setLocalizacaoAtual(new Localizacao(locFormigaFrente.getX(), locFormigaFrente.getY() + 1));
-            }
-        } else if (localizacaoAtual != null && localizacaoDestino != null) {
-            Localizacao proximaLocalizacao = localizacaoAtual.proximaLocalizacao(localizacaoDestino);
-            setLocalizacaoAtual(proximaLocalizacao);
-        }
-    }
 
     /**
      * Move e jogue para trás
      */
     @Override
     public String toString() {
-        return "Formiga-" + id + " em " + getLocalizacao() +
-                (formigaAFrente != null ? " (seguindo Formiga-" + formigaAFrente.getId() + ")" : "");
+        return "Formiga-" + id + " em " + getLocalizacao();
     }
 }

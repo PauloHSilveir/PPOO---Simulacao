@@ -4,8 +4,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class JanelaSimulacao extends JFrame {
-    private Mapa mapa;
-    private VisaoMapa visaoMapa;
+    private final Mapa mapa;
+    private final VisaoMapa visaoMapa;
     
     /**
      * Cria uma nova janela de simulacao para exibir o mapa.
@@ -27,6 +27,18 @@ public class JanelaSimulacao extends JFrame {
     public void executarAcao() {
         visaoMapa.preparePaint();
         
+        // Desenhar os formigueiros no mapa
+        for (Formigueiro formigueiro : mapa.getFormigueiros()) {
+            Localizacao localizacao = formigueiro.getLocalizacao();
+            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY() - 1, formigueiro.getImagem(), true);
+        }
+
+        // Desenhar os obstáculos
+        for (Obstaculo obstaculo : mapa.getObstaculos()) {
+            Localizacao localizacao = obstaculo.getLocalizacao();
+            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), obstaculo.getImagem(), true);
+        }
+
         // Desenhar as formigas no mapa
         for (int i = 0; i < mapa.getAltura(); i++) {
             for (int j = 0; j < mapa.getLargura(); j++) {
@@ -40,18 +52,6 @@ public class JanelaSimulacao extends JFrame {
                     }
                 }
             }
-        }
-    
-        // Desenhar os formigueiros no mapa
-        for (Formigueiro formigueiro : mapa.getFormigueiros()) {
-            Localizacao localizacao = formigueiro.getLocalizacao();
-            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY() - 1, formigueiro.getImagem(), true);
-        }
-
-        // Desenhar os obstáculos
-        for (Obstaculo obstaculo : mapa.getObstaculos()) {
-            Localizacao localizacao = obstaculo.getLocalizacao();
-            visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), obstaculo.getImagem(), true);
         }
     
         visaoMapa.repaint();
